@@ -28,7 +28,6 @@ dist-ssr
 .claude/
 .cursor/
 .kilocode/
-.specs/
 .windsurf/
 skills-lock.json
 caixa.db
