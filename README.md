@@ -50,4 +50,5 @@ npm run tauri build
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Sinta-se livre para usar, modificar e distribuir.
+Este projeto é de código aberto e está licenciado sob a **GNU General Public License v3.0 (GPLv3)**. 
+Isso significa que você é livre para usar, estudar, modificar e compartilhar o software. No entanto, qualquer trabalho derivado ou modificado que for distribuído também deve ser disponibilizado sob a mesma licença GPLv3 com o código-fonte aberto. O uso comercial e monetização são permitidos, desde que essas regras sejam respeitadas.
