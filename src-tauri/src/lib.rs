@@ -1,0 +1,40 @@
+mod db;
+
+use db::{categorias, schema, transacoes, DbState};
+use rusqlite::Connection;
+use std::sync::Mutex;
+use tauri::Manager;
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_sql::Builder::default().build())
+        .setup(|app| {
+            let app_data_dir = app.path().app_data_dir().expect("failed to get app data dir");
+            std::fs::create_dir_all(&app_data_dir).expect("failed to create app data dir");
+            let db_path = app_data_dir.join("finledger.db");
+
+            // Initializes schema and seeds default categories if empty
+            schema::init(db_path.clone()).expect("Failed to initialize database schema");
+            
+            // Keeps a persistent connection in the app state
+            let conn = Connection::open(&db_path).expect("Failed to open connection");
+            
+            app.manage(DbState {
+                conn: Mutex::new(conn)
+            });
+
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![
+            categorias::get_all_categorias,
+            categorias::save_categoria,
+            categorias::delete_categoria,
+            transacoes::get_all_transacoes,
+            transacoes::save_transacao,
+            transacoes::delete_transacao
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}

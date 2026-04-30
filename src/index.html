@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finanças Pessoais</title>
+
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <h1>Caixa</h1>
+    <span>finanças pessoais</span>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Visão Geral</div>
+    <button class="nav-item active" onclick="go('dashboard')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      Dashboard
+    </button>
+    <div class="nav-section">Lançamentos</div>
+    <button class="nav-item" onclick="go('lancamentos')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h6"/></svg>
+      Transações
+    </button>
+    <button class="nav-item" onclick="go('novo')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v6M5 8h6"/></svg>
+      Nova Transação
+    </button>
+    <div class="nav-section">Configurações</div>
+    <button class="nav-item" onclick="go('categorias')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h5l1.5 1.5H14v10H2z"/></svg>
+      Categorias
+    </button>
+    <button class="nav-item" onclick="go('importar')">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M5 8l3 3 3-3M3 13h10"/></svg>
+      Importar Planilha
+    </button>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- DASHBOARD -->
+  <section class="section active" id="sec-dashboard">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle">Resumo financeiro mensal</div>
+      </div>
+      <div class="month-nav">
+        <button class="btn-icon" onclick="changeMonth(-1)">&#8592;</button>
+        <span id="month-label">Mai 2025</span>
+        <button class="btn-icon" onclick="changeMonth(1)">&#8594;</button>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card green">
+        <div class="label">Receitas</div>
+        <div class="value" id="d-receitas">R$ 0</div>
+        <div class="sub">no mês</div>
+      </div>
+      <div class="summary-card red">
+        <div class="label">Despesas</div>
+        <div class="value" id="d-despesas">R$ 0</div>
+        <div class="sub">no mês</div>
+      </div>
+      <div class="summary-card amber">
+        <div class="label">Saldo do mês</div>
+        <div class="value" id="d-saldo">R$ 0</div>
+        <div class="sub">receitas − despesas</div>
+      </div>
+      <div class="summary-card blue">
+        <div class="label">Saldo acumulado</div>
+        <div class="value" id="d-acumulado">R$ 0</div>
+        <div class="sub">total geral</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Gastos por categoria</div></div>
+        </div>
+        <div id="cat-breakdown"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Últimas 6 transações</div></div>
+        </div>
+        <div id="recent-list"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Evolução mensal</div><div class="card-subtitle">Últimos 6 meses</div></div>
+      </div>
+      <div id="monthly-chart"></div>
+    </div>
+  </section>
+
+  <!-- TRANSAÇÕES -->
+  <section class="section" id="sec-lancamentos">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Transações</div>
+        <div class="page-subtitle">Todos os seus lançamentos</div>
+      </div>
+      <button class="btn btn-primary" onclick="go('novo')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Nova transação
+      </button>
+    </div>
+
+    <div class="filter-bar">
+      <div><label>Mês</label>
+        <select id="filter-mes" onchange="renderLancamentos()"></select>
+      </div>
+      <div><label>Tipo</label>
+        <select id="filter-tipo" onchange="renderLancamentos()">
+          <option value="">Todos</option>
+          <option value="receita">Receita</option>
+          <option value="despesa">Despesa</option>
+        </select>
+      </div>
+      <div><label>Categoria</label>
+        <select id="filter-cat" onchange="renderLancamentos()">
+          <option value="">Todas</option>
+        </select>
+      </div>
+      <div><label>Busca</label>
+        <input type="text" id="filter-busca" placeholder="Descrição..." oninput="renderLancamentos()">
+      </div>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div id="table-lancamentos"></div>
+    </div>
+    <div style="margin-top: 12px; font-size: 12px; color: var(--text3);" id="table-summary"></div>
+  </section>
+
+  <!-- NOVA TRANSAÇÃO -->
+  <section class="section" id="sec-novo">
+    <div class="page-header">
+      <div>
+        <div class="page-title" id="form-page-title">Nova Transação</div>
+      </div>
+    </div>
+    <div class="card" style="max-width: 540px;">
+      <div class="tabs">
+        <button class="tab active" onclick="setTipo('despesa', this)">Despesa</button>
+        <button class="tab" onclick="setTipo('receita', this)">Receita</button>
+      </div>
+      <input type="hidden" id="f-id">
+      <input type="hidden" id="f-tipo" value="despesa">
+
+      <div class="form-group">
+        <label>Descrição</label>
+        <input type="text" id="f-desc" placeholder="Ex: Supermercado, Salário...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Valor</label>
+          <div class="input-prefix"><span>R$</span><input type="number" id="f-valor" step="0.01" min="0" placeholder="0,00"></div>
+        </div>
+        <div class="form-group">
+          <label>Data</label>
+          <input type="date" id="f-data">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="f-cat"></select>
+      </div>
+      <div class="form-group">
+        <label>Observação (opcional)</label>
+        <input type="text" id="f-obs" placeholder="Notas adicionais...">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 8px;">
+        <button class="btn btn-primary" onclick="salvarTransacao()">Salvar</button>
+        <button class="btn btn-ghost" onclick="cancelarForm()">Cancelar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIAS -->
+  <section class="section" id="sec-categorias">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Categorias</div>
+        <div class="page-subtitle">Organize seus lançamentos</div>
+      </div>
+      <button class="btn btn-primary" onclick="abrirModalCategoria()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Nova categoria
+      </button>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Despesas</div>
+        <div id="list-cats-despesa"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Receitas</div>
+        <div id="list-cats-receita"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPORTAR -->
+  <section class="section" id="sec-importar">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Importar Planilha</div>
+        <div class="page-subtitle">Importe transações de um arquivo Excel ou CSV</div>
+      </div>
+    </div>
+    <div class="card" style="max-width: 640px;">
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4-4 4 4 4-8 4 4M4 20h16"/></svg>
+        <p style="font-size:14px; margin-bottom:6px; color: var(--text2);">Arraste seu arquivo aqui ou clique para selecionar</p>
+        <p style="font-size:12px">Suporta .xlsx, .xls e .csv</p>
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleFile(event)">
+      </div>
+
+      <div style="margin: 20px 0; padding: 16px; background: var(--bg3); border-radius: var(--radius-sm);">
+        <p style="font-size:13px; font-weight:500; margin-bottom:8px;">Formato esperado da planilha</p>
+        <table style="font-size:12px;">
+          <thead><tr>
+            <th>Data</th><th>Descrição</th><th>Valor</th><th>Tipo</th><th>Categoria</th>
+          </tr></thead>
+          <tbody><tr>
+            <td>15/01/2025</td><td>Supermercado</td><td>250.00</td><td>despesa</td><td>Alimentação</td>
+          </tr><tr>
+            <td>01/01/2025</td><td>Salário</td><td>3500.00</td><td>receita</td><td>Trabalho</td>
+          </tr></tbody>
+        </table>
+        <p style="font-size:11px; color:var(--text3); margin-top:10px;">A coluna "Tipo" deve conter "receita" ou "despesa". A categoria será criada automaticamente se não existir.</p>
+      </div>
+
+      <div id="import-preview" class="hidden">
+        <div class="card-title" style="margin-bottom:12px;">Prévia da importação</div>
+        <div id="import-table"></div>
+        <div style="margin-top:16px; display:flex; gap:10px;">
+          <button class="btn btn-primary" onclick="confirmarImport()">Importar tudo</button>
+          <button class="btn btn-ghost" onclick="cancelarImport()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<!-- MODAL CATEGORIA -->
+<div class="modal-overlay hidden" id="modal-cat-overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-cat-title">Nova Categoria</div>
+    <input type="hidden" id="mc-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nome</label>
+        <input type="text" id="mc-nome" placeholder="Ex: Alimentação">
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="mc-tipo">
+          <option value="despesa">Despesa</option>
+          <option value="receita">Receita</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Cor</label>
+      <div class="color-swatches" id="color-swatches"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModalCategoria()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCategoria()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script src="assets/xlsx.full.min.js"></script>
+<script src="main.js" defer></script>
+</body>
+</html>
