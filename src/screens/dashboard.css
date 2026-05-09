@@ -1,6 +1,9 @@
 /* dashboard.css — Estilos específicos do Dashboard */
 
-.cat-progress-item { margin-bottom: 14px; }
+.cat-progress-item {
+  margin-bottom: 14px;
+  padding: 2px 0;
+}
 .cat-progress-header {
   display: flex;
   justify-content: space-between;
@@ -26,11 +29,15 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 0;
+  padding: 10px 8px;
   border-bottom: 1px solid var(--border);
-  transition: background 150ms ease;
+  border-radius: var(--radius-sm);
+  transition: background 150ms ease, color 150ms ease;
 }
 .recent-item:last-child { border-bottom: none; }
+.recent-item:hover {
+  background: var(--bg3);
+}
 .recent-dot {
   width: 8px;
   height: 8px;
@@ -72,4 +79,19 @@
   height: calc(100% - 30px);
   align-items: flex-end;
   width: 100%;
+}
+
+.bar {
+  animation: chartBarIn 600ms ease-out both;
+}
+
+@keyframes chartBarIn {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
 }

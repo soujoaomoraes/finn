@@ -251,51 +251,7 @@
 </div>
 
 <!-- DRAWER TRANSAÇÃO -->
-<div class="drawer-overlay hidden" id="drawer-overlay">
-  <div class="drawer" id="drawer">
-    <div class="drawer-header">
-      <div class="drawer-title" id="drawer-title">Nova Transação</div>
-      <button class="btn-icon" id="drawer-close" onclick="closeDrawer()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l10 10M13 3L3 13"/></svg>
-      </button>
-    </div>
-    <div class="drawer-body">
-      <div class="tabs">
-        <button class="tab active" id="tab-despesa" onclick="setTipo('despesa', this)">Despesa</button>
-        <button class="tab" id="tab-receita" onclick="setTipo('receita', this)">Receita</button>
-      </div>
-      <input type="hidden" id="f-id">
-      <input type="hidden" id="f-tipo" value="despesa">
-
-      <div class="form-group">
-        <label>Descrição</label>
-        <input type="text" id="f-desc" placeholder="Ex: Supermercado, Salário...">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Valor</label>
-          <div class="input-prefix"><span>R$</span><input type="number" id="f-valor" step="0.01" min="0" placeholder="0,00"></div>
-        </div>
-        <div class="form-group">
-          <label>Data</label>
-          <input type="date" id="f-data">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Categoria</label>
-        <select id="f-cat"></select>
-      </div>
-      <div class="form-group">
-        <label>Observação (opcional)</label>
-        <input type="text" id="f-obs" placeholder="Notas adicionais...">
-      </div>
-      <div class="drawer-footer">
-        <button class="btn btn-ghost" onclick="closeDrawer()">Cancelar</button>
-        <button class="btn btn-primary" onclick="salvarTransacao()">Salvar</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="drawer-root"></div>
 
 <!-- TOAST -->
 <div id="toast"></div>

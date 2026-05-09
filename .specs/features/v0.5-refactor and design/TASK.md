@@ -51,38 +51,38 @@
 
 ## Fase 3 — Sidebar e Identidade FinLedger
 
-- [] Substituir "Caixa" por "FinLedger" no logo da sidebar (Syne 700, cor `--accent`)
-- [] Atualizar subtítulo "finanças pessoais" (Instrument Sans 400, 11px, `--text3`)
-- [] Atualizar título da janela Tauri para "FinLedger" no `tauri.conf.json`
-- [] Aplicar novo estilo nos itens da sidebar: item ativo com borda esquerda `2px solid --accent`
-- [] Estilizar labels de seção da sidebar (uppercase, 11px, letter-spacing 0.1em, `--text3`)
-- [] Buscar e substituir qualquer outra referência textual a "Caixa" no código
+- [x] Substituir "Caixa" por "FinLedger" no logo da sidebar (Syne 700, cor `--accent`)
+- [x] Atualizar subtítulo "finanças pessoais" (Instrument Sans 400, 11px, `--text3`)
+- [x] Atualizar título da janela Tauri para "FinLedger" no `tauri.conf.json`
+- [x] Aplicar novo estilo nos itens da sidebar: item ativo com borda esquerda `2px solid --accent`
+- [x] Estilizar labels de seção da sidebar (uppercase, 11px, letter-spacing 0.1em, `--text3`)
+- [x] Buscar e substituir qualquer outra referência textual a "Caixa" no código
 
 ---
 
 ## Fase 4 — Drawer de Transação
 
-- [] Criar `src/components/drawer.js` — estrutura HTML e lógica do drawer
-- [] Criar `src/components/drawer.css` — estilos e animações do drawer
-- [] Implementar animação de abertura: slide da direita, `250ms ease-out`
-- [] Implementar overlay com `backdrop-filter: blur(4px)` e fade-in
-- [] Mover conteúdo do formulário de Nova/Editar Transação para dentro do drawer
-- [] Fechar drawer ao clicar no overlay
-- [] Fechar drawer ao pressionar `Escape`
-- [] Fechar drawer e atualizar lista ao salvar com sucesso
-- [] Remover tela dedicada de Nova Transação da navegação e do router
-- [] Atualizar item "Nova Transação" na sidebar para abrir drawer
-- [] Atualizar botão "Nova transação" na tela de Transações para abrir drawer
-- [] Atualizar botão "Editar" na tabela para abrir drawer com dados preenchidos
+- [x] Criar `src/components/drawer.js` — estrutura HTML e lógica do drawer
+- [x] Criar `src/components/drawer.css` — estilos e animações do drawer
+- [x] Implementar animação de abertura: slide da direita, `250ms ease-out`
+- [x] Implementar overlay com `backdrop-filter: blur(4px)` e fade-in
+- [x] Mover conteúdo do formulário de Nova/Editar Transação para dentro do drawer
+- [x] Fechar drawer ao clicar no overlay
+- [x] Fechar drawer ao pressionar `Escape`
+- [x] Fechar drawer e atualizar lista ao salvar com sucesso
+- [x] Remover tela dedicada de Nova Transação da navegação e do router
+- [x] Atualizar item "Nova Transação" na sidebar para abrir drawer
+- [x] Atualizar botão "Nova transação" na tela de Transações para abrir drawer
+- [x] Atualizar botão "Editar" na tabela para abrir drawer com dados preenchidos
 
 ---
 
 ## Fase 5 — Polimento Visual
 
-- [] Aplicar micro-transições de hover em todos os elementos interativos (`150ms ease`)
-- [] Animação de preenchimento nas barras de progresso do Dashboard (`600ms ease-out`)
-- [] Revisar animação do toast: slide-up + fade-in, `200ms ease-out`
-- [] Revisar swatch de cor no modal de categoria: hover `scale(1.1)`, selecionado com borda branca
-- [] Revisar espaçamentos em todas as telas (padding, gap, margens)
-- [] Verificar consistência visual entre todas as telas (nenhuma tela com estilo diferente)
-- [] Teste final completo: criar, editar, excluir transação, categoria, importar planilha
+- [x] Aplicar micro-transições de hover em todos os elementos interativos (`150ms ease`)
+- [x] Animação de preenchimento nas barras de progresso do Dashboard (`600ms ease-out`)
+- [x] Revisar animação do toast: slide-up + fade-in, `200ms ease-out`
+- [x] Revisar swatch de cor no modal de categoria: hover `scale(1.1)`, selecionado com borda branca
+- [x] Revisar espaçamentos em todas as telas (padding, gap, margens)
+- [x] Verificar consistência visual entre todas as telas (nenhuma tela com estilo diferente)
+- [x] Teste final completo: criar, editar, excluir transação, categoria, importar planilha
