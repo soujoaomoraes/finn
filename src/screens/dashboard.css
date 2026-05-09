@@ -1,0 +1,75 @@
+/* dashboard.css — Estilos específicos do Dashboard */
+
+.cat-progress-item { margin-bottom: 14px; }
+.cat-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+.cat-progress-value { color: var(--text2); }
+.cat-progress-pct { color: var(--text3); font-size: 11px; }
+
+/* Animação de preenchimento das barras */
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  width: 0;
+  animation: fillBar 600ms ease-out forwards;
+}
+@keyframes fillBar {
+  to { width: var(--target-width); }
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 150ms ease;
+}
+.recent-item:last-child { border-bottom: none; }
+.recent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.recent-info { flex: 1; min-width: 0; }
+.recent-desc {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.recent-meta { font-size: 11px; color: var(--text3); }
+.recent-value { font-size: 13px; font-weight: 500; white-space: nowrap; }
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text3);
+}
+.chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.bar-cols {
+  display: flex;
+  gap: 3px;
+  height: calc(100% - 30px);
+  align-items: flex-end;
+  width: 100%;
+}

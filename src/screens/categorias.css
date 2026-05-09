@@ -1,0 +1,11 @@
+/* screens/categorias.css — Tela Categorias + modal de cor */
+
+.cat-list-empty {
+  color: var(--text3);
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.cat-section-title {
+  margin-bottom: 16px;
+}

@@ -1,0 +1,62 @@
+/* screens/importar.css — Tela Importar Planilha */
+
+.card-import-max {
+  max-width: 640px;
+}
+
+.import-dropzone-hint {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: var(--text2);
+}
+
+.import-dropzone-formats {
+  font-size: 12px;
+}
+
+.import-format-callout {
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+}
+
+.import-format-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.import-format-table-wrap {
+  font-size: 12px;
+}
+
+.import-format-footnote {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 10px;
+}
+
+.import-preview-title {
+  margin-bottom: 12px;
+}
+
+.import-preview-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.import-preview-extra {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 8px;
+}
+
+.import-preview-val--receita {
+  color: var(--green);
+}
+
+.import-preview-val--despesa {
+  color: var(--red);
+}
