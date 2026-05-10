@@ -1,7 +1,7 @@
 # ARCHITECTURE.md — FinLedger: Finanças Pessoais
-**Versão:** V0  
-**Plataforma:** Tauri 2.x (Windows / macOS / Linux)  
-**Última atualização:** Abril 2026
+**Versão:** V0.5  
+**Plataforma:** Tauri 2.x (Windows / macOS / Linux) + Vite  
+**Última atualização:** Maio 2026
 
 ---
 
@@ -37,9 +37,10 @@ O frontend é **vanilla HTML/CSS/JS** — exatamente o mesmo código do protóti
 | Shell nativo | Tauri | 2.x | Empacota o app como executável desktop |
 | Backend | Rust | stable | Linguagem padrão do Tauri |
 | Banco de dados | SQLite via `tauri-plugin-sql` | 2.x | Persistência local, sem servidor |
-| Frontend | HTML + CSS + JS (vanilla) | — | Manter paridade com o protótipo |
-| Parser de planilha | SheetJS (xlsx.js) | 0.18.x | Já usado no protótipo, via CDN local |
-| Tipografia | DM Serif Display + DM Sans | — | Google Fonts (carregado localmente) |
+| Bundler/Dev Server | Vite | 5.x/6.x | HMR, build rápido e suporte a ES Modules |
+| Frontend | HTML + CSS + JS (vanilla modular) | — | Refatorado para módulos (ESM) |
+| Parser de planilha | SheetJS (xlsx.js) | 0.18.x | Via CDN local para importar dados |
+| Tipografia | Syne + Instrument Sans | — | Identidade visual V0.5 (Google Fonts) |
 
 ---
 
@@ -55,13 +56,18 @@ finledger/
 │       ├── nova-feature.md     # Template para pedir uma feature nova à IA
 │       └── corrigir-bug.md     # Template para reportar e corrigir bugs
 │
-├── src/                        # Frontend (HTML/CSS/JS)
-│   ├── index.html              # Apenas estrutura HTML (sem <style> e sem <script> inline)
-│   ├── styles.css              # Todo o CSS: variáveis, layout, componentes, animações
-│   ├── main.js                 # Todo o JS: estado, navegação, renderização, invoke()
+├── src/                        # Frontend Modular (HTML/CSS/JS)
+│   ├── index.html              # Fica na raiz do projeto (Vite exige)
+│   ├── main.js                 # Ponto de entrada JS (importa módulos e componentes)
+│   ├── styles.css              # Variáveis e CSS global
+│   ├── db.js                   # Camada de comunicação (invoke) com backend
+│   ├── router.js               # Lógica de navegação entre telas
+│   ├── utils.js                # Funções de formatação (data, moeda)
+│   ├── toast.js                # Lógica de feedback visual
+│   ├── components/             # Componentes reutilizáveis (sidebar, drawer)
+│   ├── screens/                # Telas da aplicação (um JS e CSS por tela)
 │   └── assets/
-│       ├── xlsx.full.min.js    # SheetJS local (não CDN externo)
-│       └── fonts/              # DM Serif Display + DM Sans locais
+│       └── xlsx.full.min.js    # SheetJS local (não CDN externo)
 │
 ├── src-tauri/                  # Backend Rust (gerenciado pelo Tauri)
 │   ├── src/
@@ -75,12 +81,13 @@ finledger/
 │   ├── Cargo.toml              # Dependências Rust
 │   └── tauri.conf.json         # Configuração do Tauri (janela, permissões, etc.)
 │
-└── package.json                # Scripts de build/dev do Tauri
+├── package.json                # Scripts ("dev": "vite", "build": "vite build")
+└── vite.config.js              # Configuração do Vite (porta 1420)
 ```
 
 > **Nota sobre a pasta `docs/`:** é o ponto de entrada para qualquer IA que trabalhar no projeto. Antes de pedir código, sempre forneça `SPEC.md` + `ARCHITECTURE.md` como contexto. Os arquivos em `prompts/` são templates reutilizáveis para não precisar reescrever o contexto do zero a cada sessão.
 
-> **Nota sobre o frontend:** o protótipo original é um único `index.html` com CSS e JS inline. Na migração para Tauri, o código é **obrigatoriamente separado** em três arquivos: `index.html` (estrutura), `styles.css` (todo o CSS) e `main.js` (todo o JS). O `index.html` referencia os dois com tags `<link>` e `<script src>` normais. Essa separação é a padrão do projeto — nunca escrever CSS ou JS inline no HTML.
+> **Nota sobre o frontend:** Na migração para V0.5, o código foi modularizado. Em vez de arquivos únicos e gigantes, usamos a abordagem de módulos ES com Vite. Cada tela possui seu próprio arquivo `.js` e `.css` (ex: `screens/dashboard.js`). Os scripts são importados em `main.js` como ES Modules.
 
 ---
 
@@ -268,20 +275,9 @@ tokio          = { version = "1", features = ["full"] }
 
 ## 10. Recursos Externos — Política para Build Local
 
-O protótipo HTML carrega recursos externos (Google Fonts, SheetJS via CDN). Em um app Tauri os arquivos devem ser locais para funcionar sem internet.
+O protótipo HTML carregava recursos externos. Em um app Tauri idealmente arquivos devem ser locais para funcionar sem internet.
 
-| Recurso | Protótipo | V0 Tauri |
-|---|---|---|
-| DM Serif Display + DM Sans | Google Fonts (CDN) | Baixar e servir de `src/assets/fonts/` |
-| SheetJS (xlsx.js) | cdnjs.cloudflare.com | Copiar para `src/assets/xlsx.full.min.js` |
-
-No `index.html`, substituir:
-```html
-<!-- Antes -->
-<link href="https://fonts.googleapis.com/css2?family=..." rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/..."></script>
-
-<!-- Depois -->
-<link href="/assets/fonts/fonts.css" rel="stylesheet">
-<script src="/assets/xlsx.full.min.js"></script>
-```
+| Recurso | V0.5 Vite/Tauri |
+|---|---|
+| Tipografia | Syne e Instrument Sans (Google Fonts ou locais) |
+| SheetJS (xlsx.js) | Servido de `src/assets/xlsx.full.min.js` |
