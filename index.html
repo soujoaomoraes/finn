@@ -31,9 +31,9 @@
       <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h6"/></svg>
       Transações
     </button>
-    <button class="nav-item" id="nav-nova">
-      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v6M5 8h6"/></svg>
-      Nova Transação
+    <button class="nav-item" id="nav-recorrentes">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v6M3 8l3 3 3-3M3 13h10"/></svg>
+      Recorrentes
     </button>
     <div class="nav-section">Configurações</div>
     <button class="nav-item" id="nav-categorias">
@@ -42,7 +42,11 @@
     </button>
     <button class="nav-item" id="nav-importar">
       <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M5 8l3 3 3-3M3 13h10"/></svg>
-      Importar Planilha
+      Importar / Exportar
+    </button>
+    <button class="nav-item" id="nav-backup">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h12M8 2v12"/></svg>
+      Backup
     </button>
   </nav>
 </aside>
@@ -62,6 +66,10 @@
         <span id="month-label">Mai 2025</span>
         <button class="btn-icon" onclick="changeMonth(1)">&#8594;</button>
       </div>
+      <button class="btn btn-primary" onclick="openDrawer()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Nova transação
+      </button>
     </div>
 
     <div class="summary-grid">
@@ -174,6 +182,23 @@
     </div>
   </section>
 
+  <!-- RECORRENTES -->
+  <section class="section" id="sec-recorrentes">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Recorrentes</div>
+        <div class="page-subtitle">Gerencie suas transações recorrentes</div>
+      </div>
+      <button class="btn btn-primary" id="btn-nova-recorrente">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Nova recorrente
+      </button>
+    </div>
+    <div class="card">
+      <div id="recorrentes-list"></div>
+    </div>
+  </section>
+
   <!-- IMPORTAR -->
   <section class="section" id="sec-importar">
     <div class="page-header">
@@ -182,6 +207,27 @@
         <div class="page-subtitle">Importe transações de um arquivo Excel ou CSV</div>
       </div>
     </div>
+    
+    <!-- Export Section -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="card-title export-section-title">Exportar dados</div>
+      <div class="export-section-subtitle">Baixe suas transações em CSV para usar em planilhas</div>
+      <div class="export-period-selector">
+        <div class="form-group">
+          <label>Data início</label>
+          <input type="date" id="export-start-date">
+        </div>
+        <div class="form-group">
+          <label>Data fim</label>
+          <input type="date" id="export-end-date">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-export-csv">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v6M3 4l3 3 3-3M1 9h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Exportar CSV
+      </button>
+    </div>
+
     <div class="card card-import-max">
       <div class="dropzone" id="dropzone">
         <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4-4 4 4 4-8 4 4M4 20h16"/></svg>
@@ -214,6 +260,36 @@
           <button type="button" class="btn btn-primary" data-import-confirm>Importar tudo</button>
           <button type="button" class="btn btn-ghost" data-import-cancel>Cancelar</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BACKUP -->
+  <section class="section" id="sec-backup">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Backup</div>
+        <div class="page-subtitle">Sincronize seus dados com o Google Drive</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Status da Sincronização</div>
+      <div id="backup-status">
+        <p>Não conectado ao Google Drive</p>
+      </div>
+      <div style="margin-top: 20px;">
+        <button class="btn btn-primary" id="btn-connect-drive">Conectar ao Google Drive</button>
+        <button class="btn btn-primary" id="btn-upload-backup" style="display: none;">Fazer Backup Agora</button>
+        <button class="btn btn-primary" id="btn-retry-backup" style="display: none;">Tentar Novamente</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Histórico de Backups</div>
+      <div id="backup-history">
+        <p style="color: var(--text3);">Nenhum backup realizado</p>
+      </div>
+      <div style="margin-top: 20px;">
+        <button class="btn btn-primary" id="btn-restore-backup" style="display: none;">Restaurar Backup</button>
       </div>
     </div>
   </section>
@@ -252,6 +328,7 @@
 
 <!-- DRAWER TRANSAÇÃO -->
 <div id="drawer-root"></div>
+<div id="recorrente-drawer-root"></div>
 
 <!-- TOAST -->
 <div id="toast"></div>

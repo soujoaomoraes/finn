@@ -83,9 +83,12 @@ export function renderLancamentos() {
       ${data.map(t => {
         const c = _categorias.find(x => x.nome === t.categoria);
         const cor = c ? c.cor : '#94a3b8';
+        const recorrenteIcon = t.recorrente_id
+          ? `<span class="recorrente-indicator" title="Transação recorrente">🔄</span>`
+          : '';
         return `<tr>
           <td style="color:var(--text2);white-space:nowrap">${fmtDate(t.data)}</td>
-          <td>${t.descricao}${t.obs ? `<div style="font-size:11px;color:var(--text3)">${t.obs}</div>` : ''}</td>
+          <td>${t.descricao}${t.obs ? `<div style="font-size:11px;color:var(--text3)">${t.obs}</div>` : ''} ${recorrenteIcon}</td>
           <td><span class="cat-dot" style="background:${cor}"></span>${t.categoria}</td>
           <td><span class="badge ${t.tipo === 'receita' ? 'badge-green' : 'badge-red'}">${t.tipo}</span></td>
           <td style="text-align:right;font-weight:500;color:${t.tipo === 'receita' ? 'var(--green)' : 'var(--red)'}">

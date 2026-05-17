@@ -11,5 +11,8 @@ export default defineConfig({
     target: 'chrome105',
     minify: !process.env.TAURI_DEBUG,
     sourcemap: !!process.env.TAURI_DEBUG,
+    rollupOptions: {
+      external: ['@tauri-apps/plugin-opener', '@tauri-apps/plugin-dialog'],
+    },
   },
 })

@@ -1,5 +1,9 @@
 /* dashboard.css — Estilos específicos do Dashboard */
 
+#sec-dashboard .page-header {
+  gap: 16px;
+}
+
 .cat-progress-item {
   margin-bottom: 14px;
   padding: 2px 0;

@@ -3,8 +3,10 @@
 const NAV_SECTION_MAP = {
   'nav-dashboard': 'dashboard',
   'nav-lancamentos': 'lancamentos',
+  'nav-recorrentes': 'recorrentes',
   'nav-categorias': 'categorias',
-  'nav-importar': 'importar'
+  'nav-importar': 'importar',
+  'nav-backup': 'backup'
 };
 
 export function setSidebarActive(section) {
@@ -19,9 +21,4 @@ export function initSidebar({ onNavigate, onOpenDrawer }) {
     if (!button) return;
     button.addEventListener('click', () => onNavigate(section));
   });
-
-  const newTransactionButton = document.getElementById('nav-nova');
-  if (newTransactionButton) {
-    newTransactionButton.addEventListener('click', () => onOpenDrawer());
-  }
 }

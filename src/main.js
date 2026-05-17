@@ -5,14 +5,12 @@ import { initSidebar, setSidebarActive } from './components/sidebar.js';
 import { initDrawer, openDrawer, closeDrawer, isDrawerOpen, updateDrawerCategories } from './components/drawer.js';
 import { initDashboard, updateDashboardState, renderDashboard } from './screens/dashboard.js';
 import { initTransacoes, updateTransacoesState, populateFilters, renderLancamentos } from './screens/transacoes.js';
-import {
-  initCategorias,
-  renderCategorias,
-  renderColorSwatches,
-  fecharModalCategoria,
-  bindNovaCategoriaButton,
-} from './screens/categorias.js';
+import { initCategorias, renderCategorias, renderColorSwatches, fecharModalCategoria, bindNovaCategoriaButton } from './screens/categorias.js';
 import { initImportar } from './screens/importar.js';
+import { initRecorrentes } from './screens/recorrentes.js';
+import { initBackup, markBackupDirty } from './screens/backup.js';
+import { save } from '@tauri-apps/plugin-dialog';
+import { invoke } from '@tauri-apps/api/core';
 
 let transacoes = [];
 let categorias = [];
@@ -68,6 +66,7 @@ async function salvarTransacao(transacao) {
   populateFilters();
   renderDashboard();
   renderLancamentos();
+  markBackupDirty();
 }
 
 function editarTransacao(id) {
@@ -82,6 +81,7 @@ async function deletarTransacao(id) {
   syncScreenState();
   renderLancamentos();
   renderDashboard();
+  markBackupDirty();
   showToast('Transação excluída');
 }
 
@@ -128,6 +128,7 @@ async function seedCategories() {
     categoria.id = id;
   }
   categorias = defaults;
+  markBackupDirty();
 }
 
 async function init() {
@@ -160,6 +161,7 @@ async function init() {
       syncScreenState();
       populateFilters();
       updateCatSelects();
+      markBackupDirty();
     },
   });
   bindNovaCategoriaButton();
@@ -174,8 +176,42 @@ async function init() {
       renderDashboard();
       renderLancamentos();
       go('lancamentos');
+      markBackupDirty();
+    },
+    onExport: async (startDate, endDate) => {
+      try {
+        const filePath = await save({
+          defaultPath: `finledger_export_${startDate}_to_${endDate}.csv`,
+          filters: [
+            {
+              name: 'CSV',
+              extensions: ['csv']
+            }
+          ]
+        });
+
+        if (filePath) {
+          try {
+            await invoke('export_csv', { startDate, endDate, filePath });
+            showToast('Exportação concluída com sucesso!');
+          } catch (exportError) {
+            console.error('Export error:', exportError);
+            showToast('Erro ao exportar: ' + exportError);
+          }
+        }
+      } catch (error) {
+        console.error('Dialog error:', error);
+        // User canceled the dialog - no error shown
+      }
     },
   });
+
+  initRecorrentes({
+    getCategorias: () => categorias,
+    onOpenDrawer: openDrawer,
+  });
+
+  initBackup();
 
   updateMonthLabel();
   renderColorSwatches();

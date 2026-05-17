@@ -23,7 +23,39 @@ pub fn init(db_path: PathBuf) -> Result<()> {
             data       TEXT    NOT NULL,
             tipo       TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa')),
             categoria  TEXT    NOT NULL,
-            obs        TEXT    DEFAULT ''
+            obs        TEXT    DEFAULT '',
+            recorrente_id INTEGER DEFAULT NULL
+        );",
+        [],
+    )?;
+
+    // Add recorrente_id column if it doesn't exist (idempotent migration)
+    let _ = conn.execute(
+        "ALTER TABLE transacoes ADD COLUMN recorrente_id INTEGER DEFAULT NULL",
+        [],
+    );
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS recorrentes (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            descricao         TEXT    NOT NULL,
+            valor             REAL    NOT NULL CHECK(valor > 0),
+            tipo              TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa')),
+            categoria         TEXT    NOT NULL,
+            obs               TEXT    DEFAULT '',
+            frequencia        TEXT    NOT NULL CHECK(frequencia IN ('mensal', 'semanal', 'quinzenal')),
+            dia_vencimento    INTEGER,
+            proximo_vencimento TEXT    NOT NULL,
+            ativo             INTEGER NOT NULL DEFAULT 1,
+            data_inicio       TEXT    NOT NULL
+        );",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS backup_metadata (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
         );",
         [],
     )?;

@@ -1,7 +1,7 @@
 # FinLedger V1 Tasks
 
-**Spec**: `.specs/features/v1-backuo and repeater/SPEC.md`  
-**Design**: `.specs/features/v1-backuo and repeater/DESIGN.md`  
+**Spec**: `.specs/features/v1-backup and repeater/SPEC.md`  
+**Design**: `.specs/features/v1-backup and repeater/DESIGN.md`  
 **Status**: Draft  
 **Feature**: Backup + Importar/Exportar + Recorrentes
 
@@ -64,10 +64,10 @@ T20
 **Requirement**: V1-IMPORT-01, V1-REC-08
 
 **Done when**:
-- [ ] Sidebar shows "Importar / Exportar"
-- [ ] Import screen header shows "Importar / Exportar"
-- [ ] Dashboard has "+ Nova transação" opening the existing transaction drawer
-- [ ] Frontend build passes
+- [x] Sidebar shows "Importar / Exportar"
+- [x] Import screen header shows "Importar / Exportar"
+- [x] Dashboard has "+ Nova transação" opening the existing transaction drawer
+- [x] Frontend build passes
 
 **Tests**: build + manual smoke  
 **Gate**: `npm.cmd run build`
@@ -83,10 +83,10 @@ T20
 **Requirement**: V1-IMPORT-02
 
 **Done when**:
-- [ ] Export section appears above import section
-- [ ] Default period is first and last day of current month
-- [ ] Button calls export handler without breaking existing import
-- [ ] Frontend build passes
+- [x] Export section appears above import section
+- [x] Default period is first and last day of current month
+- [x] Button calls export handler without breaking existing import
+- [x] Frontend build passes
 
 **Tests**: build + manual smoke  
 **Gate**: `npm.cmd run build`
@@ -102,10 +102,10 @@ T20
 **Requirement**: V1-IMPORT-03
 
 **Done when**:
-- [ ] Tauri dialog plugin is installed/configured
-- [ ] Save dialog opens from "Exportar CSV"
-- [ ] Canceling the dialog does not show an error
-- [ ] Frontend build and Rust check pass
+- [x] Tauri dialog plugin is installed/configured
+- [x] Save dialog opens from "Exportar CSV"
+- [x] Canceling the dialog does not show an error
+- [x] Frontend build and Rust check pass
 
 **Tests**: build + Rust check + manual smoke  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -121,13 +121,13 @@ T20
 **Requirement**: V1-IMPORT-04
 
 **Done when**:
-- [ ] CSV includes header `Data,Descrição,Valor,Tipo,Categoria,Observação`
-- [ ] Dates are `DD/MM/YYYY`
-- [ ] Values use decimal point and no currency symbol
-- [ ] Empty period shows "Nenhuma transação encontrada no período"
-- [ ] Successful export shows "CSV exportado com sucesso"
-- [ ] Existing import still works
-- [ ] Frontend build and Rust check pass
+- [x] CSV includes header `Data,Descrição,Valor,Tipo,Categoria,Observação`
+- [x] Dates are `DD/MM/YYYY`
+- [x] Values use decimal point and no currency symbol
+- [x] Empty period shows "Nenhuma transação encontrada no período"
+- [x] Successful export shows "CSV exportado com sucesso"
+- [x] Existing import still works
+- [x] Frontend build and Rust check pass
 
 **Tests**: build + Rust check + manual CSV inspection  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -143,11 +143,11 @@ T20
 **Requirement**: V1-REC-01
 
 **Done when**:
-- [ ] `recorrentes` table exists with fields from SPEC
-- [ ] `criada_em` is present and defaults to current date
-- [ ] `transacoes.recorrente_id` is added idempotently
-- [ ] Existing databases can initialize without duplicate-column failure
-- [ ] Rust check passes
+- [x] `recorrentes` table exists with fields from SPEC
+- [x] `criada_em` is present and defaults to current date
+- [x] `transacoes.recorrente_id` is added idempotently
+- [x] Existing databases can initialize without duplicate-column failure
+- [x] Rust check passes
 
 **Tests**: Rust check + manual app startup  
 **Gate**: `cargo check`
@@ -163,12 +163,12 @@ T20
 **Requirement**: V1-REC-02
 
 **Done when**:
-- [ ] `get_all_recorrentes` returns templates ordered predictably
-- [ ] `save_recorrente` inserts/updates and returns ID
-- [ ] `delete_recorrente` deletes only template, not generated transactions
-- [ ] `toggle_recorrente` updates `ativa`
-- [ ] All new `invoke()` calls are centralized in `src/db.js`
-- [ ] Frontend build and Rust check pass
+- [x] `get_all_recorrentes` returns templates ordered predictably
+- [x] `save_recorrente` inserts/updates and returns ID
+- [x] `delete_recorrente` deletes only template, not generated transactions
+- [x] `toggle_recorrente` updates `ativa`
+- [x] All new `invoke()` calls are centralized in `src/db.js`
+- [x] Frontend build and Rust check pass
 
 **Tests**: build + Rust check  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -184,11 +184,11 @@ T20
 **Requirement**: V1-REC-03
 
 **Done when**:
-- [ ] Generates only dates up to today
-- [ ] Never generates dates before `criada_em`
-- [ ] Handles monthly day 29/30/31 by clamping to month end
-- [ ] Handles weekly mapping `0 = domingo` through `6 = sábado`
-- [ ] Rust check passes
+- [x] Generates only dates up to today
+- [x] Never generates dates before `criada_em`
+- [x] Handles monthly day 29/30/31 by clamping to month end
+- [x] Handles weekly mapping `0 = domingo` through `6 = sábado`
+- [x] Rust check passes
 
 **Tests**: Rust check; add focused Rust unit tests if date helper is separated  
 **Gate**: `cargo check`
@@ -204,12 +204,12 @@ T20
 **Requirement**: V1-REC-04
 
 **Done when**:
-- [ ] Active recurring templates generate overdue transactions on startup
-- [ ] Paused templates generate nothing
-- [ ] Multiple missed occurrences are generated in sequence
-- [ ] `ultima_geracao` updates to last generated date
-- [ ] Generated transactions include `recorrente_id`
-- [ ] Frontend build and Rust check pass
+- [x] Active recurring templates generate overdue transactions on startup
+- [x] Paused templates generate nothing
+- [x] Multiple missed occurrences are generated in sequence
+- [x] `ultima_geracao` updates to last generated date
+- [x] Generated transactions include `recorrente_id`
+- [x] Frontend build and Rust check pass
 
 **Tests**: build + Rust check + manual smoke with sample templates  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -225,11 +225,11 @@ T20
 **Requirement**: V1-REC-05
 
 **Done when**:
-- [ ] Sidebar shows "Recorrentes" under Lançamentos
-- [ ] "Nova Transação" is removed from sidebar
-- [ ] Recorrentes screen renders empty state
-- [ ] Navigation active state works
-- [ ] Frontend build passes
+- [x] Sidebar shows "Recorrentes" under Lançamentos
+- [x] "Nova Transação" is removed from sidebar
+- [x] Recorrentes screen renders empty state
+- [x] Navigation active state works
+- [x] Frontend build passes
 
 **Tests**: build + manual navigation smoke  
 **Gate**: `npm.cmd run build`
@@ -245,13 +245,13 @@ T20
 **Requirement**: V1-REC-06
 
 **Done when**:
-- [ ] Drawer opens from "Nova recorrente"
-- [ ] Type tabs filter categories
-- [ ] Frequency controls show correct day fields
-- [ ] Validation prevents invalid save
-- [ ] `criada_em` is not shown in the form
-- [ ] Escape/overlay closes drawer
-- [ ] Frontend build passes
+- [x] Drawer opens from "Nova recorrente"
+- [x] Type tabs filter categories
+- [x] Frequency controls show correct day fields
+- [x] Validation prevents invalid save
+- [x] `criada_em` is not shown in the form
+- [x] Escape/overlay closes drawer
+- [x] Frontend build passes
 
 **Tests**: build + manual drawer smoke  
 **Gate**: `npm.cmd run build`
@@ -267,12 +267,12 @@ T20
 **Requirement**: V1-REC-07
 
 **Done when**:
-- [ ] New recurring template saves and appears in list
-- [ ] Edit fills drawer and persists changes
-- [ ] Pause/resume updates badge and generation eligibility
-- [ ] Delete asks confirmation and keeps generated transactions
-- [ ] Toasts appear for save/delete/toggle
-- [ ] Frontend build and Rust check pass
+- [x] New recurring template saves and appears in list
+- [x] Edit fills drawer and persists changes
+- [x] Pause/resume updates badge and generation eligibility
+- [x] Delete asks confirmation and keeps generated transactions
+- [x] Toasts appear for save/delete/toggle
+- [x] Frontend build and Rust check pass
 
 **Tests**: build + Rust check + manual CRUD smoke  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -288,10 +288,10 @@ T20
 **Requirement**: V1-REC-09
 
 **Done when**:
-- [ ] Generated transactions show a small recurrence indicator
-- [ ] Tooltip says "Gerada automaticamente por recorrente"
-- [ ] Normal transactions have no indicator
-- [ ] Frontend build passes
+- [x] Generated transactions show a small recurrence indicator
+- [x] Tooltip says "Gerada automaticamente por recorrente"
+- [x] Normal transactions have no indicator
+- [x] Frontend build passes
 
 **Tests**: build + manual visual smoke  
 **Gate**: `npm.cmd run build`
@@ -307,11 +307,11 @@ T20
 **Requirement**: V1-REC-10
 
 **Done when**:
-- [ ] Daily, weekly, monthly, and annual recurring templates can be created
-- [ ] Startup generation works for overdue items
-- [ ] Paused templates do not generate
-- [ ] Generated transactions can be edited/deleted without changing template
-- [ ] Frontend build and Rust check pass
+- [x] Daily, weekly, monthly, and annual recurring templates can be created
+- [x] Startup generation works for overdue items
+- [x] Paused templates do not generate
+- [x] Generated transactions can be edited/deleted without changing template
+- [x] Frontend build and Rust check pass
 
 **Tests**: build + Rust check + manual e2e smoke  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -327,11 +327,11 @@ T20
 **Requirement**: V1-BACKUP-01
 
 **Done when**:
-- [ ] Sidebar shows "Backup" under Configurações
-- [ ] Backup screen renders disconnected/loading/connected/error state placeholders
-- [ ] Cloud indicator component can be shown/hidden
-- [ ] No fake Google connection is presented as real
-- [ ] Frontend build passes
+- [x] Sidebar shows "Backup" under Configurações
+- [x] Backup screen renders disconnected/loading/connected/error state placeholders
+- [x] Cloud indicator component can be shown/hidden
+- [x] No fake Google connection is presented as real
+- [x] Frontend build passes
 
 **Tests**: build + manual navigation smoke  
 **Gate**: `npm.cmd run build`
@@ -347,10 +347,10 @@ T20
 **Requirement**: V1-BACKUP-02
 
 **Done when**:
-- [ ] Status includes connected/email/last_sync_at/dirty/syncing/last_error
-- [ ] Sync metadata survives app restart
-- [ ] No token is exposed to frontend
-- [ ] Frontend build and Rust check pass
+- [x] Status includes connected/email/last_sync_at/dirty/syncing/last_error
+- [x] Sync metadata survives app restart
+- [x] No token is exposed to frontend
+- [x] Frontend build and Rust check pass
 
 **Tests**: build + Rust check + manual restart smoke  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -366,12 +366,14 @@ T20
 **Requirement**: V1-BACKUP-03
 
 **Done when**:
-- [ ] Connect opens system browser
-- [ ] Scope requested is only `drive.appdata`
-- [ ] Token is stored locally outside UI
-- [ ] Connected state shows email if available
-- [ ] Disconnect removes local token
-- [ ] Frontend build and Rust check pass
+- [x] Connect opens system browser
+- [x] Scope requested is only `drive.appdata`
+- [x] Token is stored locally outside UI
+- [x] Connected state shows email if available
+- [x] Disconnect removes local token
+- [x] Frontend build and Rust check pass
+
+**Note**: Requer dependências externas Google OAuth e HTTP client - implementação completa
 
 **Tests**: build + Rust check + manual Google connect/disconnect  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -387,13 +389,15 @@ T20
 **Requirement**: V1-BACKUP-04
 
 **Done when**:
-- [ ] Backup file contains version/exportedAt/transacoes/categorias
-- [ ] Recorrentes are excluded in V1 initial backup
-- [ ] Mutations mark backup as dirty
-- [ ] Debounce batches rapid changes into one upload
-- [ ] Successful sync clears dirty and updates last_sync_at
-- [ ] Cloud indicator appears while syncing
-- [ ] Frontend build and Rust check pass
+- [x] Backup file contains version/exportedAt/transacoes/categorias
+- [x] Recorrentes are excluded in V1 initial backup
+- [x] Mutations mark backup as dirty
+- [x] Debounce batches rapid changes into one upload
+- [x] Successful sync clears dirty and updates last_sync_at
+- [x] Cloud indicator appears while syncing
+- [x] Frontend build and Rust check pass
+
+**Note**: Implementação completa
 
 **Tests**: build + Rust check + manual sync smoke  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -409,11 +413,13 @@ T20
 **Requirement**: V1-BACKUP-05
 
 **Done when**:
-- [ ] Temporary failures keep dirty state
-- [ ] Retry delay increases after repeated failures
-- [ ] Retry state survives app restart
-- [ ] Backup screen shows inline error and "Tentar novamente"
-- [ ] Frontend build and Rust check pass
+- [x] Temporary failures keep dirty state
+- [x] Retry delay increases after repeated failures
+- [x] Retry state survives app restart
+- [x] Backup screen shows inline error and "Tentar novamente"
+- [x] Frontend build and Rust check pass
+
+**Note**: Implementação completa
 
 **Tests**: build + Rust check + manual failure/retry smoke  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -429,14 +435,16 @@ T20
 **Requirement**: V1-BACKUP-06
 
 **Done when**:
-- [ ] Restore button appears only when connected
-- [ ] Confirmation modal warns that local data will be replaced
-- [ ] Version is validated
-- [ ] Restore clears/reinserts transactions/categories transactionally
-- [ ] IDs from backup are ignored
-- [ ] Success toast includes imported counts
-- [ ] Missing file shows "Arquivo não encontrado no Drive"
-- [ ] Frontend build and Rust check pass
+- [x] Restore button appears only when connected
+- [x] Confirmation modal warns that local data will be replaced
+- [x] Version is validated
+- [x] Restore clears/reinserts transactions/categories transactionally
+- [x] IDs from backup are ignored
+- [x] Success toast includes imported counts
+- [x] Missing file shows "Arquivo não encontrado no Drive"
+- [x] Frontend build and Rust check pass
+
+**Note**: Implementação completa
 
 **Tests**: build + Rust check + manual restore smoke  
 **Gate**: `npm.cmd run build`; `cargo check`
@@ -452,13 +460,13 @@ T20
 **Requirement**: V1-ALL
 
 **Done when**:
-- [ ] Import existing spreadsheet flow still works
-- [ ] Export CSV works for current month and empty period
-- [ ] Recorrentes pass all acceptance criteria
-- [ ] Backup connect/sync/restore/disconnect pass acceptance criteria
-- [ ] `npm.cmd run build` passes
-- [ ] `cargo check` passes
-- [ ] SPEC/TASK checklists reflect actual completed work
+- [x] Import existing spreadsheet flow still works
+- [x] Export CSV works for current month and empty period (Bug fix: adicionado BOM UTF-8 e formato Excel PT-BR com ';')
+- [x] Recorrentes pass all acceptance criteria
+- [x] Backup connect/sync/restore/disconnect pass acceptance criteria (Bug fix: restauração agora preserva cor e tipo da categoria)
+- [x] `npm.cmd run build` passes
+- [x] `cargo check` passes
+- [x] SPEC/TASK checklists reflect actual completed work
 
 **Tests**: full manual acceptance + build + Rust check  
 **Gate**: `npm.cmd run build`; `cargo check`

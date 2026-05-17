@@ -2,6 +2,8 @@
 
 **FinLedger** é um aplicativo desktop leve e rápido para gestão de finanças pessoais. Ele permite o controle offline e seguro de suas receitas e despesas, visualização de saldos mensais e importação de dados através de planilhas de forma super intuitiva.
 
+![Demonstração da interface do FinLedger](image.png)
+
 ## 🚀 Tecnologias
 
 Este projeto foi construído focando em performance, baixo consumo de memória e total privacidade dos dados (tudo fica no seu computador).
@@ -15,10 +17,17 @@ Este projeto foi construído focando em performance, baixo consumo de memória e
 - **Dashboard:** Resumo mensal do seu saldo, despesas e receitas.
 - **Transações:** Listagem, filtro, busca, criação, edição e exclusão de transações.
 - **Categorias:** Gerenciamento completo de categorias customizadas por cor.
-- **Importação:** Importe suas despesas em massa a partir de um arquivo de planilha (`.xlsx` ou `.csv`).
-- **Modo Offline:** Funciona sem necessidade de internet, com o banco persistido diretamente na sua máquina.
+- **Importação / Exportação:** Importe suas despesas em massa a partir de um arquivo de planilha (`.xlsx` ou `.csv`) e exporte seus dados facilmente para relatórios.
+- **Transações Recorrentes:** Cadastre transações que se repetem (diária, semanal, mensal ou anual) e deixe o FinLedger gerá-las automaticamente para você.
+- **Backup na Nuvem (Google Drive):** Sincronize seus dados de forma invisível e segura no Google Drive para nunca perder seu histórico.
+- **Modo Offline-First:** Funciona sem necessidade de internet, com o banco persistido diretamente na sua máquina e sincronização silenciosa em background.
 
-## 💻 Como Rodar Localmente
+## ⬇️ Download e Instalação (Em Construção 🚧)
+
+Uma versão com instalador pré-compilado está atualmente em desenvolvimento. 
+Em breve, você poderá simplesmente baixar o executável, instalar e usar o FinLedger sem precisar de nenhum conhecimento técnico ou compilar o código-fonte! Fique de olho na aba de **Releases** deste repositório.
+
+## 💻 Como Rodar Localmente (Para Desenvolvedores)
 
 ### Pré-requisitos
 - [Node.js](https://nodejs.org/)
@@ -38,12 +47,23 @@ cd finledger
 npm install
 ```
 
-3. Execute em modo de desenvolvimento:
+3. Configuração do Backup no Google Drive:
+O FinLedger usa a API do Google Drive para sincronizar backups na nuvem. Para rodar o app localmente e compilar, você precisa das suas próprias credenciais OAuth.
+- Acesse o [Google Cloud Console](https://console.cloud.google.com/).
+- Crie um projeto, habilite a **Google Drive API** e configure a **Tela de Consentimento OAuth**.
+- Crie credenciais do tipo **Desktop App** (Aplicativo para Computador).
+- Copie o arquivo `.env.example` para `.env`:
+```bash
+cp .env.example .env
+```
+- Cole seu `Client ID` e `Client Secret` dentro do arquivo `.env`.
+
+4. Execute em modo de desenvolvimento:
 ```bash
 npm run tauri dev
 ```
 
-4. Para compilar o executável final para o seu sistema:
+5. Para compilar o executável final para o seu sistema:
 ```bash
 npm run tauri build
 ```

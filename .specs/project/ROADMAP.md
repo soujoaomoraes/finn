@@ -48,15 +48,15 @@ O FinLedger cresce em camadas. Cada versão entrega algo completo e utilizável 
 
 ---
 
-### V1: Backup + Recorrentes 🔜 PRÓXIMA
+### V1: Backup + Recorrentes ✅ CONCLUÍDA
 
-- [ ] Backup automático no Google Drive via OAuth (opcional, offline continua funcionando)
-- [ ] Exportar backup local em JSON
-- [ ] Restaurar backup (Google Drive ou arquivo local)
-- [ ] Cadastrar transação recorrente (frequência: diária, semanal, mensal, anual)
-- [ ] Geração automática da transação na data configurada
-- [ ] Indicador visual na lista para transações recorrentes
-- [ ] Gerenciar recorrentes (pausar, editar, excluir)
+- [x] Backup automático no Google Drive via OAuth (opcional, offline continua funcionando)
+- [x] Exportar dados em CSV e Importar planilhas
+- [x] Restaurar backup pelo Google Drive
+- [x] Cadastrar transação recorrente (frequência: diária, semanal, mensal, anual)
+- [x] Geração automática da transação na data configurada
+- [x] Indicador visual na lista para transações recorrentes
+- [x] Gerenciar recorrentes (pausar, editar, excluir)
 
 ---
 

@@ -9,11 +9,15 @@ let _getTransacoes = () => [];
 let _getCategorias = () => [];
 let _importRows = [];
 let _onAfterImport = () => {};
+let _onExport = () => {};
 
-export function initImportar({ getTransacoes, getCategorias, onAfterImport }) {
+export function initImportar({ getTransacoes, getCategorias, onAfterImport, onExport }) {
   _getTransacoes = getTransacoes;
   _getCategorias = getCategorias;
   _onAfterImport = onAfterImport;
+  _onExport = onExport || (() => {});
+
+  initExportDates();
 
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('file-input');
@@ -34,6 +38,39 @@ export function initImportar({ getTransacoes, getCategorias, onAfterImport }) {
       if (e.target.closest('[data-import-cancel]')) cancelarImport();
     });
   }
+
+  const exportBtn = document.getElementById('btn-export-csv');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', handleExport);
+  }
+}
+
+function initExportDates() {
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  const startDateInput = document.getElementById('export-start-date');
+  const endDateInput = document.getElementById('export-end-date');
+
+  if (startDateInput) {
+    startDateInput.value = firstDay.toISOString().split('T')[0];
+  }
+  if (endDateInput) {
+    endDateInput.value = lastDay.toISOString().split('T')[0];
+  }
+}
+
+function handleExport() {
+  const startDate = document.getElementById('export-start-date')?.value;
+  const endDate = document.getElementById('export-end-date')?.value;
+
+  if (!startDate || !endDate) {
+    showToast('Selecione o período para exportar');
+    return;
+  }
+
+  _onExport(startDate, endDate);
 }
 
 function dragOver(e) {
