@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinLedger — Telas V1.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --base:#0d0c0a;--s1:#131110;--s2:#1a1815;--s3:#201e1a;--s4:#272420;
+  --b1:#232018;--b2:#2e2b25;--b3:#3a362e;
+  --t1:#ede8df;--t2:#b5a898;--t3:#6b5f52;--t4:#3d342c;
+  --orange:#f97316;--og06:rgba(249,115,22,.06);--og10:rgba(249,115,22,.10);--og20:rgba(249,115,22,.22);
+  --green:#4ade80;--gn10:rgba(74,222,128,.10);
+  --red:#f87171;--rd10:rgba(248,113,113,.10);
+  --amber:#fbbf24;--ab10:rgba(251,191,36,.10);
+  --blue:#60a5fa;--bl10:rgba(96,165,250,.10);
+  --purple:#c084fc;--pu10:rgba(192,132,252,.10);
+}
+html,body{height:100%;background:#060504;font-family:'Inter',system-ui,sans-serif;color:var(--t1);font-size:13px;}
+
+/* ── APP SHELL ── */
+.app{display:flex;height:100vh;background:var(--base);}
+
+/* ── SIDEBAR ── */
+.sb{width:192px;min-width:192px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0;}
+.sb-logo{padding:20px 18px 18px;border-bottom:1px solid var(--b1);}
+.sb-wordmark{font-size:16px;font-weight:700;color:var(--orange);letter-spacing:-.3px;}
+.sb-tagline{font-size:8px;letter-spacing:.8px;text-transform:uppercase;color:var(--t4);margin-top:3px;}
+.sb-nav{padding:12px 8px;flex:1;overflow-y:auto;}
+.sb-sec{font-size:7.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--t4);font-weight:600;padding:10px 10px 4px;}
+.sb-sec:first-child{padding-top:2px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;color:var(--t3);font-size:12px;cursor:pointer;margin-bottom:1px;transition:.15s;user-select:none;}
+.sb-item:hover{color:var(--t2);background:rgba(255,255,255,.02);}
+.sb-item.on{background:var(--og06);color:var(--t1);}
+.pip{width:3px;height:15px;border-radius:2px;background:transparent;flex-shrink:0;}
+.sb-item.on .pip{background:var(--orange);}
+.sb-footer{padding:12px 16px;border-top:1px solid var(--b1);flex-shrink:0;}
+.sb-version{font-size:9px;color:var(--t4);}
+
+/* ── MAIN ── */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;}
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;}
+.scrollable{flex:1;overflow-y:auto;padding:22px 26px 26px;scrollbar-width:thin;scrollbar-color:var(--b2) transparent;}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 26px 14px;flex-shrink:0;border-bottom:1px solid var(--b1);}
+.pg-title{font-size:19px;font-weight:600;letter-spacing:-.5px;}
+.pg-sub{font-size:11px;color:var(--t3);margin-top:3px;}
+.topbar-right{display:flex;align-items:center;gap:9px;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:9px;padding:0 15px;height:32px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;}
+.btn-primary{background:var(--orange);color:#fff;}
+.btn-primary:hover{background:#ea6d12;}
+.btn-secondary{background:transparent;color:var(--t2);border:1px solid var(--b2);}
+.btn-secondary:hover{border-color:var(--b3);color:var(--t1);}
+.btn-ghost{background:transparent;color:var(--t3);padding:0 8px;}
+.btn-ghost:hover{color:var(--t2);}
+.btn-danger{background:var(--rd10);color:var(--red);border:1px solid rgba(248,113,113,.18);}
+
+/* ── CARD ── */
+.card{background:var(--s2);border:1px solid var(--b1);border-radius:12px;}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500;}
+.badge-receita{background:var(--gn10);color:var(--green);border:1px solid rgba(74,222,128,.15);}
+.badge-despesa{background:var(--rd10);color:var(--red);border:1px solid rgba(248,113,113,.15);}
+.status{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:11px;}
+.status-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.status-ativa{background:var(--gn10);color:var(--green);}
+.status-pausada{background:rgba(107,95,84,.15);color:var(--t3);}
+.status-conectado{background:var(--gn10);color:var(--green);}
+.status-sync{background:var(--bl10);color:var(--blue);}
+
+/* ── FORM ELEMENTS ── */
+.field{display:flex;flex-direction:column;gap:6px;}
+.label{font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:var(--t4);font-weight:500;}
+.input{background:var(--s3);border:1px solid var(--b2);border-radius:9px;padding:9px 13px;font-size:12.5px;color:var(--t1);font-family:inherit;outline:none;width:100%;transition:.15s;}
+.input:focus{border-color:var(--orange);background:var(--s3);}
+.input::placeholder{color:var(--t4);}
+.select{background:var(--s3);border:1px solid var(--b2);border-radius:9px;padding:9px 13px;font-size:12.5px;color:var(--t1);font-family:inherit;outline:none;width:100%;appearance:none;cursor:pointer;}
+.textarea{background:var(--s3);border:1px solid var(--b2);border-radius:9px;padding:9px 13px;font-size:12.5px;color:var(--t1);font-family:inherit;outline:none;width:100%;resize:vertical;min-height:72px;}
+.input-prefix{position:relative;}
+.input-prefix .prefix{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:12.5px;pointer-events:none;}
+.input-prefix .input{padding-left:30px;}
+
+/* tabs */
+.tabs{display:flex;background:var(--s3);border-radius:9px;padding:3px;gap:2px;width:fit-content;}
+.tab{padding:6px 20px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;color:var(--t3);transition:.15s;}
+.tab.on{background:var(--s2);color:var(--t1);box-shadow:0 1px 3px rgba(0,0,0,.3);}
+
+/* panel label */
+.panel-label{font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:var(--t4);font-weight:500;}
+
+/* ── MONTH NAV ── */
+.mnav{display:flex;align-items:center;background:var(--s2);border:1px solid var(--b2);border-radius:9px;overflow:hidden;height:32px;}
+.mnb{width:28px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--t4);cursor:pointer;font-size:14px;}
+.ml{padding:0 13px;font-size:12px;color:var(--t2);font-weight:500;border-left:1px solid var(--b2);border-right:1px solid var(--b2);line-height:32px;white-space:nowrap;}
+
+/* ── TABLE ── */
+.table-wrap{border-radius:12px;overflow:hidden;border:1px solid var(--b1);}
+.table{width:100%;border-collapse:collapse;}
+.table thead th{background:var(--s2);padding:10px 16px;text-align:left;font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:var(--t4);font-weight:500;border-bottom:1px solid var(--b1);}
+.table thead th:last-child{text-align:right;}
+.table tbody tr{background:var(--s2);border-bottom:1px solid var(--b1);transition:.12s;}
+.table tbody tr:last-child{border-bottom:none;}
+.table tbody tr:hover{background:var(--s3);}
+.table tbody td{padding:11px 16px;font-size:12.5px;color:var(--t2);vertical-align:middle;}
+.td-main{color:var(--t1);font-weight:500;}
+.td-obs{font-size:10px;color:var(--t4);margin-top:2px;}
+.td-val-pos{color:var(--green);font-weight:500;text-align:right;}
+.td-val-neg{color:var(--red);font-weight:500;text-align:right;}
+.td-actions{display:flex;gap:6px;justify-content:flex-end;}
+.icon-btn{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:transparent;border:1px solid var(--b2);color:var(--t3);transition:.15s;}
+.icon-btn:hover{background:var(--s3);color:var(--t1);}
+.icon-btn.danger:hover{background:var(--rd10);color:var(--red);border-color:rgba(248,113,113,.2);}
+
+/* cat dot */
+.cat-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.cat-cell{display:flex;align-items:center;gap:7px;}
+
+/* ── FILTER BAR ── */
+.filters{display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap;}
+.filter-field{display:flex;flex-direction:column;gap:5px;}
+.filter-select{background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--t2);font-family:inherit;outline:none;height:32px;cursor:pointer;}
+.filter-input{background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--t1);font-family:inherit;outline:none;height:32px;width:180px;}
+.filter-input::placeholder{color:var(--t4);}
+
+/* totals row */
+.totals-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--s2);border:1px solid var(--b1);border-top:none;border-radius:0 0 12px 12px;}
+.total-count{font-size:11px;color:var(--t4);}
+.total-vals{display:flex;gap:16px;font-size:12px;font-weight:500;}
+
+/* ── RECORRENTES LIST ── */
+.rec-item{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--b1);}
+.rec-item:last-child{border-bottom:none;}
+.rec-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rec-body{flex:1;min-width:0;}
+.rec-desc{font-size:13px;color:var(--t1);font-weight:500;}
+.rec-meta{font-size:10px;color:var(--t3);margin-top:2px;}
+.rec-right{display:flex;align-items:center;gap:10px;}
+.rec-val{font-size:13px;font-weight:600;letter-spacing:-.3px;}
+
+/* ── CATEGORIAS ── */
+.cats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.cats-col-title{font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:var(--t4);font-weight:500;margin-bottom:12px;}
+.cat-item-row{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--b1);}
+.cat-item-row:last-child{border-bottom:none;}
+.cat-swatch{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.cat-name-text{font-size:12.5px;color:var(--t1);font-weight:500;flex:1;}
+
+/* color picker */
+.color-grid{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;}
+.color-swatch{width:26px;height:26px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:.15s;flex-shrink:0;}
+.color-swatch.on{border-color:#fff;transform:scale(1.1);}
+
+/* ── IMPORT/EXPORT ── */
+.dropzone{border:1.5px dashed var(--b3);border-radius:12px;padding:36px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:.2s;text-align:center;}
+.dropzone:hover{border-color:var(--orange);background:var(--og06);}
+.dropzone-icon{width:40px;height:40px;border-radius:11px;background:var(--s3);display:flex;align-items:center;justify-content:center;color:var(--t3);}
+.dropzone-title{font-size:13px;color:var(--t2);font-weight:500;}
+.dropzone-sub{font-size:11px;color:var(--t4);}
+
+/* preview table */
+.preview-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.preview-table th{text-align:left;padding:8px 12px;color:var(--t4);font-size:9px;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--b1);}
+.preview-table td{padding:8px 12px;color:var(--t2);border-bottom:1px solid var(--b1);}
+.preview-table tr:last-child td{border-bottom:none;}
+
+/* ── BACKUP ── */
+.backup-status-card{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:22px 24px;}
+.backup-email{font-size:14px;color:var(--t1);font-weight:500;margin-top:8px;}
+.backup-sync-time{font-size:11px;color:var(--t3);margin-top:3px;}
+.cloud-indicator{display:inline-flex;align-items:center;gap:6px;background:var(--bl10);border:1px solid rgba(96,165,250,.2);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--blue);}
+
+/* section divider */
+.section-divider{display:flex;align-items:center;gap:12px;margin:22px 0 18px;}
+.section-divider-line{flex:1;height:1px;background:var(--b1);}
+.section-divider-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--t4);font-weight:600;}
+
+/* empty state */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:10px;color:var(--t4);}
+.empty-icon{width:44px;height:44px;border-radius:12px;background:var(--s3);display:flex;align-items:center;justify-content:center;}
+.empty-title{font-size:13px;color:var(--t3);font-weight:500;}
+.empty-sub{font-size:11px;color:var(--t4);text-align:center;}
+
+/* toast */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:100;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{background:var(--s4);border:1px solid var(--b2);border-radius:10px;padding:11px 16px;font-size:12.5px;display:flex;align-items:center;gap:9px;min-width:220px;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:slideUp .25s ease;pointer-events:all;}
+.toast-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* DRAWER */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:none;animation:fadeIn .2s ease;}
+.drawer-overlay.open{display:block;}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--s1);border-left:1px solid var(--b1);z-index:51;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;}
+.drawer.open{transform:translateX(0);}
+.drawer-head{padding:20px 22px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;}
+.drawer-title{font-size:16px;font-weight:600;letter-spacing:-.3px;}
+.drawer-sub{font-size:11px;color:var(--t3);margin-top:3px;}
+.drawer-close{width:28px;height:28px;border-radius:7px;background:var(--s3);border:none;color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.drawer-body{flex:1;overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:16px;}
+.drawer-footer{padding:16px 22px;border-top:1px solid var(--b1);display:flex;gap:8px;flex-shrink:0;}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60;display:none;align-items:center;justify-content:center;animation:fadeIn .2s ease;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--s2);border:1px solid var(--b2);border-radius:14px;padding:24px;width:380px;max-width:90vw;}
+.modal-title{font-size:15px;font-weight:600;letter-spacing:-.3px;margin-bottom:10px;}
+.modal-body{font-size:12.5px;color:var(--t3);line-height:1.7;margin-bottom:20px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── RESPONSIVE CHROME ── */
+.screen-chrome{background:var(--base);border:1px solid var(--b1);border-radius:14px;overflow:hidden;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <nav class="sb" aria-label="Navegação principal">
+    <div class="sb-logo">
+      <div class="sb-wordmark">FinLedger</div>
+      <div class="sb-tagline">finanças pessoais</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Visão Geral</div>
+      <div class="sb-item" data-screen="dashboard" onclick="nav(this)">
+        <div class="pip"></div>Dashboard
+      </div>
+      <div class="sb-sec">Lançamentos</div>
+      <div class="sb-item on" data-screen="transacoes" onclick="nav(this)">
+        <div class="pip"></div>Transações
+      </div>
+      <div class="sb-item" data-screen="recorrentes" onclick="nav(this)">
+        <div class="pip"></div>Recorrentes
+      </div>
+      <div class="sb-sec">Configurações</div>
+      <div class="sb-item" data-screen="categorias" onclick="nav(this)">
+        <div class="pip"></div>Categorias
+      </div>
+      <div class="sb-item" data-screen="importar" onclick="nav(this)">
+        <div class="pip"></div>Importar / Exportar
+      </div>
+      <div class="sb-item" data-screen="backup" onclick="nav(this)">
+        <div class="pip"></div>Backup
+      </div>
+    </div>
+    <div class="sb-footer"><div class="sb-version">v1.1 · warm dark</div></div>
+  </nav>
+
+  <div class="main">
+
+    <!-- ════════════════════════════════════════
+         TELA: TRANSAÇÕES
+    ════════════════════════════════════════ -->
+    <div class="screen active" id="screen-transacoes">
+      <div class="topbar">
+        <div>
+          <div class="pg-title">Transações</div>
+          <div class="pg-sub">Todos os seus lançamentos</div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary" onclick="openDrawer('nova-tx')">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Nova transação
+          </button>
+        </div>
+      </div>
+      <div class="scrollable">
+        <!-- Filtros -->
+        <div class="filters">
+          <div class="filter-field">
+            <div class="label">Mês</div>
+            <select class="filter-select">
+              <option>Mai 2026</option>
+              <option>Abr 2026</option>
+              <option>Todos</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <div class="label">Tipo</div>
+            <select class="filter-select">
+              <option>Todos</option>
+              <option>Receita</option>
+              <option>Despesa</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <div class="label">Categoria</div>
+            <select class="filter-select">
+              <option>Todas</option>
+              <option>Alimentação</option>
+              <option>Transporte</option>
+              <option>Salário</option>
+              <option>Freelance</option>
+            </select>
+          </div>
+          <div class="filter-field" style="flex:1">
+            <div class="label">Busca</div>
+            <input class="filter-input" style="width:100%" placeholder="Descrição...">
+          </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Tipo</th>
+                <th style="text-align:right">Valor</th>
+                <th style="text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:var(--t3);font-size:11.5px">17/05/2026</td>
+                <td><div class="td-main">Freelance</div></td>
+                <td><div class="cat-cell"><span class="cat-dot" style="background:#34d399"></span>Freelance</div></td>
+                <td><span class="badge badge-receita">receita</span></td>
+                <td class="td-val-pos">+R$ 5.000,00</td>
+                <td><div class="td-actions">
+                  <button class="icon-btn" title="Editar" onclick="openDrawer('edit-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Excluir" onclick="openModal('del-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div></td>
+              </tr>
+              <tr>
+                <td style="color:var(--t3);font-size:11.5px">17/05/2026</td>
+                <td><div class="td-main">Supermercado</div><div class="td-obs">compra semanal</div></td>
+                <td><div class="cat-cell"><span class="cat-dot" style="background:#fb923c"></span>Alimentação</div></td>
+                <td><span class="badge badge-despesa">despesa</span></td>
+                <td class="td-val-neg">−R$ 1.000,00</td>
+                <td><div class="td-actions">
+                  <button class="icon-btn" title="Editar" onclick="openDrawer('edit-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Excluir" onclick="openModal('del-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div></td>
+              </tr>
+              <tr>
+                <td style="color:var(--t3);font-size:11.5px">13/05/2026</td>
+                <td><div class="td-main">Investimentos</div><div class="td-obs">dinheiro de teste</div></td>
+                <td><div class="cat-cell"><span class="cat-dot" style="background:#fbbf24"></span>Investimentos</div></td>
+                <td><span class="badge badge-receita">receita</span></td>
+                <td class="td-val-pos">+R$ 2.000,00</td>
+                <td><div class="td-actions">
+                  <button class="icon-btn" title="Editar" onclick="openDrawer('edit-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Excluir" onclick="openModal('del-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div></td>
+              </tr>
+              <tr>
+                <td style="color:var(--t3);font-size:11.5px">09/05/2026</td>
+                <td><div class="td-main">Testando 3</div></td>
+                <td><div class="cat-cell"><span class="cat-dot" style="background:#fb923c"></span>Alimentação</div></td>
+                <td><span class="badge badge-despesa">despesa</span></td>
+                <td class="td-val-neg">−R$ 50,00</td>
+                <td><div class="td-actions">
+                  <button class="icon-btn" title="Editar" onclick="openDrawer('edit-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Excluir" onclick="openModal('del-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div></td>
+              </tr>
+              <tr>
+                <td style="color:var(--t3);font-size:11.5px">01/04/2026</td>
+                <td><div class="td-main">Salário</div></td>
+                <td><div class="cat-cell"><span class="cat-dot" style="background:#4ade80"></span>Salário</div></td>
+                <td><span class="badge badge-receita">receita</span></td>
+                <td class="td-val-pos">+R$ 3.000,00</td>
+                <td><div class="td-actions">
+                  <button class="icon-btn" title="Editar" onclick="openDrawer('edit-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Excluir" onclick="openModal('del-tx')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="totals-row">
+            <span class="total-count">5 transações</span>
+            <div class="total-vals">
+              <span style="color:var(--green)">+R$ 10.000,00</span>
+              <span style="color:var(--t4)">·</span>
+              <span style="color:var(--red)">−R$ 1.050,00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TELA: RECORRENTES
+    ════════════════════════════════════════ -->
+    <div class="screen" id="screen-recorrentes">
+      <div class="topbar">
+        <div>
+          <div class="pg-title">Recorrentes</div>
+          <div class="pg-sub">Transações automáticas agendadas</div>
+        </div>
+        <button class="btn btn-primary" onclick="openDrawer('nova-rec')">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Nova recorrente
+        </button>
+      </div>
+      <div class="scrollable">
+        <div class="card">
+          <div class="rec-item">
+            <div class="rec-ico" style="background:var(--gn10)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M4 7l4-4 4 4" stroke="var(--green)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="rec-body">
+              <div class="rec-desc">Salário</div>
+              <div class="rec-meta">Mensal · todo dia 1 · Salário</div>
+            </div>
+            <span class="status status-ativa"><span class="status-dot"></span>Ativa</span>
+            <div class="rec-val" style="color:var(--green)">+R$ 5.000</div>
+            <div style="display:flex;gap:6px">
+              <button class="icon-btn" title="Editar" onclick="openDrawer('edit-rec')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="icon-btn" title="Pausar" onclick="showToast('Recorrente pausada','var(--amber)')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="3" y="2.5" width="2.5" height="8" rx="1" fill="currentColor"/><rect x="7.5" y="2.5" width="2.5" height="8" rx="1" fill="currentColor"/></svg>
+              </button>
+              <button class="icon-btn danger" title="Excluir" onclick="openModal('del-rec')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-ico" style="background:var(--rd10)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="var(--red)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="rec-body">
+              <div class="rec-desc">Aluguel</div>
+              <div class="rec-meta">Mensal · todo dia 5 · Moradia</div>
+            </div>
+            <span class="status status-ativa"><span class="status-dot"></span>Ativa</span>
+            <div class="rec-val" style="color:var(--red)">−R$ 1.200</div>
+            <div style="display:flex;gap:6px">
+              <button class="icon-btn" title="Editar" onclick="openDrawer('edit-rec')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="icon-btn" title="Pausar" onclick="showToast('Recorrente pausada','var(--amber)')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="3" y="2.5" width="2.5" height="8" rx="1" fill="currentColor"/><rect x="7.5" y="2.5" width="2.5" height="8" rx="1" fill="currentColor"/></svg>
+              </button>
+              <button class="icon-btn danger" title="Excluir" onclick="openModal('del-rec')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-ico" style="background:var(--rd10)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="var(--red)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="rec-body">
+              <div class="rec-desc">Streaming</div>
+              <div class="rec-meta">Mensal · todo dia 15 · Lazer</div>
+            </div>
+            <span class="status status-pausada"><span class="status-dot"></span>Pausada</span>
+            <div class="rec-val" style="color:var(--t3)">−R$ 45</div>
+            <div style="display:flex;gap:6px">
+              <button class="icon-btn" title="Editar" onclick="openDrawer('edit-rec')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="icon-btn" title="Retomar" onclick="showToast('Recorrente ativada','var(--green)')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M4 2.5l6.5 4L4 10.5V2.5z" fill="currentColor"/></svg>
+              </button>
+              <button class="icon-btn danger" title="Excluir" onclick="openModal('del-rec')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TELA: CATEGORIAS
+    ════════════════════════════════════════ -->
+    <div class="screen" id="screen-categorias">
+      <div class="topbar">
+        <div>
+          <div class="pg-title">Categorias</div>
+          <div class="pg-sub">Organize seus lançamentos por tipo</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('nova-cat')">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Nova categoria
+        </button>
+      </div>
+      <div class="scrollable">
+        <div class="cats-grid">
+          <!-- Despesas -->
+          <div>
+            <div class="cats-col-title">Despesas</div>
+            <div class="card">
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#fb923c"></span><span class="cat-name-text">Alimentação</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#60a5fa"></span><span class="cat-name-text">Transporte</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#818cf8"></span><span class="cat-name-text">Moradia</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#f472b6"></span><span class="cat-name-text">Saúde</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#4ade80"></span><span class="cat-name-text">Lazer</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#94a3b8"></span><span class="cat-name-text">Outros</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+            </div>
+          </div>
+          <!-- Receitas -->
+          <div>
+            <div class="cats-col-title">Receitas</div>
+            <div class="card">
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#4ade80"></span><span class="cat-name-text">Salário</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#34d399"></span><span class="cat-name-text">Freelance</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#fbbf24"></span><span class="cat-name-text">Investimentos</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+              <div class="cat-item-row"><span class="cat-swatch" style="background:#94a3b8"></span><span class="cat-name-text">Outros</span><div style="display:flex;gap:5px"><button class="icon-btn" title="Editar" onclick="openModal('edit-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon-btn danger" title="Excluir" onclick="openModal('del-cat')"><svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M2.5 4h8M5 4V2.5h3V4M5.5 6.5v3M7.5 6.5v3M3.5 4l.5 6.5h5L10 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TELA: IMPORTAR / EXPORTAR
+    ════════════════════════════════════════ -->
+    <div class="screen" id="screen-importar">
+      <div class="topbar">
+        <div>
+          <div class="pg-title">Importar / Exportar</div>
+          <div class="pg-sub">Gerencie seus dados em planilha</div>
+        </div>
+      </div>
+      <div class="scrollable">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <!-- EXPORTAR -->
+          <div>
+            <div class="section-divider" style="margin-top:0">
+              <div class="section-divider-label">Exportar dados</div>
+              <div class="section-divider-line"></div>
+            </div>
+            <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:16px;">
+              <p style="font-size:11.5px;color:var(--t3);line-height:1.6;">Baixe suas transações em CSV para usar em planilhas como Excel ou Google Sheets.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div class="field">
+                  <div class="label">Data início</div>
+                  <input type="date" class="input" value="2026-05-01">
+                </div>
+                <div class="field">
+                  <div class="label">Data fim</div>
+                  <input type="date" class="input" value="2026-05-31">
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width:fit-content" onclick="showToast('CSV exportado com sucesso','var(--green)')">
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v7M2 6l3.5 3.5L9 6M1 10h9" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Exportar CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- IMPORTAR -->
+          <div>
+            <div class="section-divider" style="margin-top:0">
+              <div class="section-divider-label">Importar dados</div>
+              <div class="section-divider-line"></div>
+            </div>
+            <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+              <div class="dropzone" onclick="showToast('Arquivo selecionado','var(--orange)')">
+                <div class="dropzone-icon">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 12V4M5.5 7.5L9 4l3.5 3.5M3 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="dropzone-title">Arraste seu arquivo aqui</div>
+                <div class="dropzone-sub">ou clique para selecionar · .xlsx, .xls, .csv</div>
+              </div>
+              <div style="background:var(--s3);border:1px solid var(--b2);border-radius:10px;overflow:hidden;">
+                <div style="padding:10px 14px;border-bottom:1px solid var(--b2);">
+                  <div class="panel-label">Formato esperado</div>
+                </div>
+                <table class="preview-table">
+                  <thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Tipo</th><th>Categoria</th></tr></thead>
+                  <tbody>
+                    <tr><td>15/01/2026</td><td>Supermercado</td><td>250.00</td><td>despesa</td><td>Alimentação</td></tr>
+                    <tr><td>01/01/2026</td><td>Salário</td><td>3500.00</td><td>receita</td><td>Salário</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TELA: BACKUP
+    ════════════════════════════════════════ -->
+    <div class="screen" id="screen-backup">
+      <div class="topbar">
+        <div>
+          <div class="pg-title">Backup</div>
+          <div class="pg-sub">Sincronize seus dados com o Google Drive</div>
+        </div>
+        <div class="cloud-indicator">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M10 8.5a2.5 2.5 0 000-5 3.5 3.5 0 00-7 0 2 2 0 100 4h7z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sincronizado
+        </div>
+      </div>
+      <div class="scrollable" style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Status -->
+        <div class="backup-status-card">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div>
+              <div class="panel-label">Status da sincronização</div>
+              <div class="backup-email">usuario@gmail.com</div>
+              <div class="backup-sync-time">Último backup: 17/05/2026 às 16:25</div>
+            </div>
+            <span class="status status-conectado"><span class="status-dot"></span>Conectado</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:18px;">
+            <button class="btn btn-secondary" onclick="openModal('disconnect')">Desconectar</button>
+            <button class="btn btn-primary" onclick="showToast('Backup realizado!','var(--green)')">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M10 6a4 4 0 11-4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M7.5 1L10 3.5 7.5 6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Fazer backup agora
+            </button>
+          </div>
+        </div>
+
+        <!-- Restaurar -->
+        <div class="backup-status-card">
+          <div class="panel-label" style="margin-bottom:8px">Restaurar backup</div>
+          <p style="font-size:12px;color:var(--t3);line-height:1.7;margin-bottom:16px;">Substitui todos os dados locais pelos dados do último backup salvo no Google Drive. Esta ação não pode ser desfeita.</p>
+          <button class="btn btn-danger" onclick="openModal('restore')">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 6a4 4 0 104-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 1L1 3.5 3.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Restaurar do Drive
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- REDIRECT placeholder for dashboard -->
+    <div class="screen" id="screen-dashboard">
+      <div class="topbar"><div><div class="pg-title">Dashboard</div><div class="pg-sub">Ver arquivo finledger_dashboard_v11.html</div></div></div>
+      <div class="scrollable"><div class="empty"><div class="empty-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M10 3v14" stroke="var(--t3)" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="empty-title">Dashboard aprovado separadamente</div><div class="empty-sub">Use o arquivo finledger_dashboard_v11.html<br>para visualizar o dashboard completo.</div></div></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ════════════════════
+     DRAWER: Nova / Editar Transação
+════════════════════ -->
+<div class="drawer-overlay" id="overlay-tx" onclick="closeDrawer('tx')"></div>
+<div class="drawer" id="drawer-tx">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-title" id="drawer-tx-title">Nova Transação</div>
+      <div class="drawer-sub">Organize seus lançamentos</div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer('tx')">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="field">
+      <div class="label">Tipo</div>
+      <div class="tabs">
+        <div class="tab on" onclick="switchTab(this)">Despesa</div>
+        <div class="tab" onclick="switchTab(this)">Receita</div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="label">Descrição</div>
+      <input class="input" placeholder="Ex: Supermercado">
+    </div>
+    <div class="field">
+      <div class="label">Valor</div>
+      <div class="input-prefix">
+        <span class="prefix">R$</span>
+        <input class="input" type="number" placeholder="0,00">
+      </div>
+    </div>
+    <div class="field">
+      <div class="label">Data</div>
+      <input class="input" type="date" value="2026-05-19">
+    </div>
+    <div class="field">
+      <div class="label">Categoria</div>
+      <select class="select">
+        <option>Alimentação</option>
+        <option>Transporte</option>
+        <option>Moradia</option>
+        <option>Saúde</option>
+        <option>Lazer</option>
+        <option>Outros</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="label">Observação</div>
+      <textarea class="textarea" placeholder="Opcional..."></textarea>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn btn-primary" style="flex:1" onclick="closeDrawer('tx');showToast('Transação salva!','var(--green)')">Salvar</button>
+    <button class="btn btn-secondary" onclick="closeDrawer('tx')">Cancelar</button>
+  </div>
+</div>
+
+<!-- DRAWER: Nova / Editar Recorrente -->
+<div class="drawer-overlay" id="overlay-rec" onclick="closeDrawer('rec')"></div>
+<div class="drawer" id="drawer-rec">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-title" id="drawer-rec-title">Nova Recorrente</div>
+      <div class="drawer-sub">Transação automática agendada</div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer('rec')">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="field">
+      <div class="label">Tipo</div>
+      <div class="tabs">
+        <div class="tab on" onclick="switchTab(this)">Despesa</div>
+        <div class="tab" onclick="switchTab(this)">Receita</div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="label">Descrição</div>
+      <input class="input" placeholder="Ex: Aluguel">
+    </div>
+    <div class="field">
+      <div class="label">Valor</div>
+      <div class="input-prefix">
+        <span class="prefix">R$</span>
+        <input class="input" type="number" placeholder="0,00">
+      </div>
+    </div>
+    <div class="field">
+      <div class="label">Categoria</div>
+      <select class="select">
+        <option>Moradia</option><option>Alimentação</option><option>Transporte</option><option>Outros</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="label">Frequência</div>
+      <select class="select">
+        <option>Mensal</option><option>Semanal</option><option>Diária</option><option>Anual</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="label">Dia do vencimento</div>
+      <input class="input" type="number" placeholder="1–31" min="1" max="31" value="5">
+    </div>
+    <div class="field">
+      <div class="label">Observação</div>
+      <textarea class="textarea" placeholder="Opcional..."></textarea>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn btn-primary" style="flex:1" onclick="closeDrawer('rec');showToast('Recorrente salva!','var(--green)')">Salvar</button>
+    <button class="btn btn-secondary" onclick="closeDrawer('rec')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ════════════════════
+     MODAIS
+════════════════════ -->
+
+<!-- Delete TX -->
+<div class="modal-overlay" id="modal-del-tx">
+  <div class="modal">
+    <div class="modal-title">Excluir transação</div>
+    <div class="modal-body">Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('del-tx')">Cancelar</button>
+      <button class="btn btn-danger" onclick="closeModal('del-tx');showToast('Transação excluída','var(--red)')">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Rec -->
+<div class="modal-overlay" id="modal-del-rec">
+  <div class="modal">
+    <div class="modal-title">Excluir recorrente</div>
+    <div class="modal-body">Excluir esta recorrente não remove as transações já geradas. As próximas transações não serão mais geradas automaticamente. Deseja continuar?</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('del-rec')">Cancelar</button>
+      <button class="btn btn-danger" onclick="closeModal('del-rec');showToast('Recorrente excluída','var(--red)')">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nova / Edit Cat -->
+<div class="modal-overlay" id="modal-nova-cat">
+  <div class="modal">
+    <div class="modal-title" id="modal-cat-title">Nova Categoria</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+      <div class="field">
+        <div class="label">Nome</div>
+        <input class="input" placeholder="Ex: Academia">
+      </div>
+      <div class="field">
+        <div class="label">Tipo</div>
+        <div class="tabs" style="width:100%">
+          <div class="tab on" style="flex:1;text-align:center" onclick="switchTab(this)">Despesa</div>
+          <div class="tab" style="flex:1;text-align:center" onclick="switchTab(this)">Receita</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="label">Cor</div>
+        <div class="color-grid">
+          <div class="color-swatch on" style="background:#f87171"></div>
+          <div class="color-swatch" style="background:#fb923c"></div>
+          <div class="color-swatch" style="background:#fbbf24"></div>
+          <div class="color-swatch" style="background:#a3e635"></div>
+          <div class="color-swatch" style="background:#4ade80"></div>
+          <div class="color-swatch" style="background:#34d399"></div>
+          <div class="color-swatch" style="background:#22d3ee"></div>
+          <div class="color-swatch" style="background:#60a5fa"></div>
+          <div class="color-swatch" style="background:#818cf8"></div>
+          <div class="color-swatch" style="background:#c084fc"></div>
+          <div class="color-swatch" style="background:#f472b6"></div>
+          <div class="color-swatch" style="background:#94a3b8"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('nova-cat')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('nova-cat');showToast('Categoria salva!','var(--green)')">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Cat (reusa nova-cat com título diferente) -->
+<div class="modal-overlay" id="modal-edit-cat">
+  <div class="modal">
+    <div class="modal-title">Editar Categoria</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+      <div class="field">
+        <div class="label">Nome</div>
+        <input class="input" value="Alimentação">
+      </div>
+      <div class="field">
+        <div class="label">Tipo</div>
+        <div class="tabs" style="width:100%">
+          <div class="tab on" style="flex:1;text-align:center" onclick="switchTab(this)">Despesa</div>
+          <div class="tab" style="flex:1;text-align:center" onclick="switchTab(this)">Receita</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="label">Cor</div>
+        <div class="color-grid">
+          <div class="color-swatch" style="background:#f87171"></div>
+          <div class="color-swatch on" style="background:#fb923c"></div>
+          <div class="color-swatch" style="background:#fbbf24"></div>
+          <div class="color-swatch" style="background:#a3e635"></div>
+          <div class="color-swatch" style="background:#4ade80"></div>
+          <div class="color-swatch" style="background:#34d399"></div>
+          <div class="color-swatch" style="background:#22d3ee"></div>
+          <div class="color-swatch" style="background:#60a5fa"></div>
+          <div class="color-swatch" style="background:#818cf8"></div>
+          <div class="color-swatch" style="background:#c084fc"></div>
+          <div class="color-swatch" style="background:#f472b6"></div>
+          <div class="color-swatch" style="background:#94a3b8"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('edit-cat')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('edit-cat');showToast('Categoria atualizada!','var(--green)')">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Cat -->
+<div class="modal-overlay" id="modal-del-cat">
+  <div class="modal">
+    <div class="modal-title">Excluir categoria</div>
+    <div class="modal-body">Esta categoria pode estar vinculada a transações existentes. Deseja excluí-la mesmo assim?</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('del-cat')">Cancelar</button>
+      <button class="btn btn-danger" onclick="closeModal('del-cat');showToast('Categoria excluída','var(--red)')">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Disconnect -->
+<div class="modal-overlay" id="modal-disconnect">
+  <div class="modal">
+    <div class="modal-title">Desconectar Google Drive</div>
+    <div class="modal-body">Ao desconectar, a sincronização automática será pausada. Seus dados locais permanecem intactos. O arquivo de backup no Drive não será apagado.</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('disconnect')">Cancelar</button>
+      <button class="btn btn-danger" onclick="closeModal('disconnect');showToast('Conta desconectada','var(--amber)')">Desconectar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Restore -->
+<div class="modal-overlay" id="modal-restore">
+  <div class="modal">
+    <div class="modal-title">Restaurar backup</div>
+    <div class="modal-body">Restaurar este backup vai substituir <strong style="color:var(--t1)">todos os seus dados atuais</strong> pelos dados do Drive. Esta ação não pode ser desfeita. Deseja continuar?</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('restore')">Cancelar</button>
+      <button class="btn btn-danger" onclick="closeModal('restore');showToast('Backup restaurado. 12 transações importadas.','var(--green)')">Restaurar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// Navigation
+function nav(el) {
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('on'));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  el.classList.add('on');
+  const id = 'screen-' + el.dataset.screen;
+  document.getElementById(id)?.classList.add('active');
+}
+
+// Drawers
+function openDrawer(type) {
+  if (type === 'nova-tx') {
+    document.getElementById('drawer-tx-title').textContent = 'Nova Transação';
+    document.getElementById('overlay-tx').classList.add('open');
+    document.getElementById('drawer-tx').classList.add('open');
+  } else if (type === 'edit-tx') {
+    document.getElementById('drawer-tx-title').textContent = 'Editar Transação';
+    document.getElementById('overlay-tx').classList.add('open');
+    document.getElementById('drawer-tx').classList.add('open');
+  } else if (type === 'nova-rec') {
+    document.getElementById('drawer-rec-title').textContent = 'Nova Recorrente';
+    document.getElementById('overlay-rec').classList.add('open');
+    document.getElementById('drawer-rec').classList.add('open');
+  } else if (type === 'edit-rec') {
+    document.getElementById('drawer-rec-title').textContent = 'Editar Recorrente';
+    document.getElementById('overlay-rec').classList.add('open');
+    document.getElementById('drawer-rec').classList.add('open');
+  }
+}
+function closeDrawer(t) {
+  document.getElementById('overlay-'+t).classList.remove('open');
+  document.getElementById('drawer-'+t).classList.remove('open');
+}
+
+// Modals
+function openModal(id) { document.getElementById('modal-'+id).classList.add('open'); }
+function closeModal(id) { document.getElementById('modal-'+id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+});
+
+// Tabs
+function switchTab(el) {
+  const parent = el.closest('.tabs');
+  parent.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// Color swatches
+document.querySelectorAll('.color-swatch').forEach(sw => {
+  sw.addEventListener('click', function() {
+    this.closest('.color-grid').querySelectorAll('.color-swatch').forEach(s => s.classList.remove('on'));
+    this.classList.add('on');
+  });
+});
+
+// Toasts
+function showToast(msg, color) {
+  const wrap = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="toast-dot" style="background:${color}"></span>${msg}`;
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(() => t.remove(), 300); }, 2800);
+}
+
+// Keyboard ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.drawer.open').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.drawer-overlay.open').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.modal-overlay.open').forEach(d => d.classList.remove('open'));
+  }
+});
+</script>
+</body>
+</html>
