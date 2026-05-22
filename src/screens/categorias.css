@@ -1,11 +1,105 @@
 /* screens/categorias.css — Tela Categorias + modal de cor */
 
 .cat-list-empty {
-  color: var(--text3);
+  color: var(--t3);
   font-size: 13px;
-  padding: 8px 0;
+  padding: 22px 0;
+  text-align: center;
 }
 
 .cat-section-title {
   margin-bottom: 16px;
+  color: var(--t4);
+  font-size: 9px;
+  letter-spacing: .75px;
+}
+
+#sec-categorias .grid-2 {
+  align-items: start;
+  gap: 18px;
+}
+
+#sec-categorias .card {
+  border: 1px solid var(--b1);
+  background: var(--s2);
+}
+
+#sec-categorias .cat-row {
+  min-height: 46px;
+  padding: 10px 0;
+  border-bottom-color: var(--b1);
+}
+
+#sec-categorias .cat-row:hover {
+  margin-inline: -10px;
+  padding-inline: 10px;
+  border-radius: 8px;
+  background: var(--s3);
+}
+
+#sec-categorias .cat-color-dot {
+  width: 10px;
+  height: 10px;
+}
+
+#sec-categorias .cat-name {
+  color: var(--t1);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.cat-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.cat-actions .btn-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-actions .btn-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.cat-type-tabs {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.cat-type-tabs .tab {
+  flex: 1;
+}
+
+#modal-cat-overlay .modal {
+  width: 380px;
+  border: 1px solid var(--b2);
+  background: var(--s2);
+}
+
+#modal-cat-overlay .modal-title {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+#modal-cat-overlay .color-swatches {
+  display: grid;
+  grid-template-columns: repeat(6, 26px);
+  gap: 10px;
+}
+
+#modal-cat-overlay .swatch {
+  appearance: none;
+  padding: 0;
+  border: 2px solid transparent;
+}
+
+#modal-cat-overlay .swatch.selected {
+  border-color: var(--t1);
+  transform: scale(1.1);
 }

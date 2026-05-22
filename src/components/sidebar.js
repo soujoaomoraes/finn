@@ -10,9 +10,9 @@ const NAV_SECTION_MAP = {
 };
 
 export function setSidebarActive(section) {
-  document.querySelectorAll('.nav-item').forEach((item) => item.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach((item) => item.classList.remove('on'));
   const active = document.getElementById(`nav-${section}`);
-  if (active) active.classList.add('active');
+  if (active) active.classList.add('on');
 }
 
 export function initSidebar({ onNavigate, onOpenDrawer }) {
@@ -22,3 +22,4 @@ export function initSidebar({ onNavigate, onOpenDrawer }) {
     button.addEventListener('click', () => onNavigate(section));
   });
 }
+

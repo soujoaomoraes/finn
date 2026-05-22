@@ -44,7 +44,6 @@ pub fn run() {
             backup::save_backup_metadata,
             backup::get_backup_metadata,
             oauth::connect_google_drive,
-            oauth::exchange_code_for_token,
             oauth::disconnect_google_drive,
             oauth::is_drive_connected,
             oauth::upload_backup_to_drive,

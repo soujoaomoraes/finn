@@ -8,6 +8,7 @@ import { initTransacoes, updateTransacoesState, populateFilters, renderLancament
 import { initCategorias, renderCategorias, renderColorSwatches, fecharModalCategoria, bindNovaCategoriaButton } from './screens/categorias.js';
 import { initImportar } from './screens/importar.js';
 import { initRecorrentes } from './screens/recorrentes.js';
+import { closeRecorrenteDrawer, isRecorrenteDrawerOpen } from './components/recorrente-drawer.js';
 import { initBackup, markBackupDirty } from './screens/backup.js';
 import { save } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
@@ -97,6 +98,7 @@ function updateCatSelects() {
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     if (isDrawerOpen()) closeDrawer();
+    if (isRecorrenteDrawerOpen()) closeRecorrenteDrawer();
     fecharModalCategoria();
   }
 });

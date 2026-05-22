@@ -11,7 +11,10 @@ function drawerTemplate() {
     <div class="drawer-overlay hidden" id="recorrente-drawer-overlay">
       <div class="drawer" id="recorrente-drawer">
         <div class="drawer-header">
-          <div class="drawer-title" id="recorrente-drawer-title">Nova Recorrente</div>
+          <div>
+            <div class="drawer-title" id="recorrente-drawer-title">Nova Recorrente</div>
+            <div class="drawer-subtitle">Transação automática agendada</div>
+          </div>
           <button class="btn-icon" id="recorrente-drawer-close" type="button" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l10 10M13 3L3 13"/></svg>
           </button>
@@ -60,10 +63,10 @@ function drawerTemplate() {
             <label>Observação (opcional)</label>
             <input type="text" id="recorrente-f-obs" placeholder="Notas adicionais...">
           </div>
-          <div class="drawer-footer">
-            <button class="btn btn-ghost" type="button" data-recorrente-close>Cancelar</button>
-            <button class="btn btn-primary" type="button" data-recorrente-save>Salvar</button>
-          </div>
+        </div>
+        <div class="drawer-footer">
+          <button class="btn btn-primary" type="button" data-recorrente-save>Salvar</button>
+          <button class="btn btn-ghost" type="button" data-recorrente-close>Cancelar</button>
         </div>
       </div>
     </div>

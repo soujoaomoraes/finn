@@ -37,6 +37,8 @@ export function initCategorias({ getCategorias, onAfterMutation }) {
   const modal = document.querySelector('#modal-cat-overlay .modal');
   if (modal) {
     modal.addEventListener('click', (e) => {
+      const tipoBtn = e.target.closest('[data-cat-tipo]');
+      if (tipoBtn) setCategoriaTipo(tipoBtn.dataset.catTipo);
       if (e.target.closest('[data-cat-cancel]')) fecharModalCategoria();
       if (e.target.closest('[data-cat-save]')) void salvarCategoria();
     });
@@ -60,12 +62,20 @@ function pickColor(c, el) {
   el.classList.add('selected');
 }
 
+function setCategoriaTipo(tipo) {
+  const input = document.getElementById('mc-tipo');
+  if (input) input.value = tipo;
+  document.querySelectorAll('[data-cat-tipo]').forEach((button) => {
+    button.classList.toggle('active', button.dataset.catTipo === tipo);
+  });
+}
+
 export function renderColorSwatches() {
   const container = document.getElementById('color-swatches');
   if (!container) return;
   container.innerHTML = COLORS.map(
     (c) =>
-      `<div class="swatch ${_selectedColor === c ? 'selected' : ''}" data-color="${c}" style="background:${c}"></div>`
+      `<button type="button" class="swatch ${_selectedColor === c ? 'selected' : ''}" data-color="${c}" style="background:${c}" aria-label="Selecionar cor ${c}"></button>`
   ).join('');
 }
 
@@ -85,8 +95,23 @@ export function renderCategorias() {
       <div class="cat-row">
         <div class="cat-color-dot" style="background:${c.cor}"></div>
         <div class="cat-name">${c.nome}</div>
-        <button type="button" class="btn-icon" data-edit-cat="${c.id}" title="Editar">✏️</button>
-        <button type="button" class="btn-icon" data-delete-cat="${c.id}" title="Excluir" style="margin-left:4px">🗑️</button>
+        <div class="cat-actions">
+          <button type="button" class="btn-icon" data-edit-cat="${c.id}" title="Editar" aria-label="Editar categoria">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M9.8 3.2 12.8 6.2"/>
+              <path d="M4 12l1-3.2 6.7-6.7a1.5 1.5 0 0 1 2.1 2.1L7.1 10.9 4 12Z"/>
+              <path d="M3 13h10"/>
+            </svg>
+          </button>
+          <button type="button" class="btn-icon btn-icon-danger" data-delete-cat="${c.id}" title="Excluir" aria-label="Excluir categoria">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 4h10"/>
+              <path d="M6 4V2.8h4V4"/>
+              <path d="M5 6v6M8 6v6M11 6v6"/>
+              <path d="M4.5 4 5 14h6l.5-10"/>
+            </svg>
+          </button>
+        </div>
       </div>`
       )
       .join('');
@@ -98,7 +123,7 @@ export function abrirModalCategoria() {
   renderColorSwatches();
   document.getElementById('mc-id').value = '';
   document.getElementById('mc-nome').value = '';
-  document.getElementById('mc-tipo').value = 'despesa';
+  setCategoriaTipo('despesa');
   document.getElementById('modal-cat-title').textContent = 'Nova Categoria';
   document.getElementById('modal-cat-overlay').classList.remove('hidden');
 }
@@ -111,7 +136,7 @@ function editarCategoria(id) {
   renderColorSwatches();
   document.getElementById('mc-id').value = c.id;
   document.getElementById('mc-nome').value = c.nome;
-  document.getElementById('mc-tipo').value = c.tipo;
+  setCategoriaTipo(c.tipo);
   document.getElementById('modal-cat-title').textContent = 'Editar Categoria';
   document.getElementById('modal-cat-overlay').classList.remove('hidden');
 }

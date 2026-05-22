@@ -11,18 +11,9 @@ use tauri::Emitter;
 
 const AUTH_URL: &str = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
-const REDIRECT_URI: &str = "http://localhost:8080"; // Para desktop apps
 
 fn get_client_id() -> &'static str {
     env!("GOOGLE_CLIENT_ID")
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct OAuthToken {
-    pub access_token: String,
-    pub refresh_token: Option<String>,
-    pub expires_in: u64,
-    pub email: Option<String>,
 }
 
 #[tauri::command]
@@ -72,7 +63,6 @@ pub fn connect_google_drive(app_handle: tauri::AppHandle, state: tauri::State<Db
     // Clone necessary values for thread
     let db_file_clone = db_file.clone();
     let redirect_uri_clone = redirect_uri.clone();
-    let oauth_state_clone = oauth_state.clone();
     let app_handle_clone = app_handle.clone();
 
     std::thread::spawn(move || {
@@ -229,16 +219,6 @@ fn exchange_code_for_token_inner(code: String, state_param: String, conn: &Conne
 
 fn exchange_code_for_token_with_conn(conn: &Connection, code: String, state_param: String, redirect_uri: &str) -> Result<(), String> {
     exchange_code_for_token_inner(code, state_param, conn, redirect_uri)
-}
-
-#[tauri::command]
-pub fn exchange_code_for_token(code: String, state_param: String, state: tauri::State<DbState>) -> Result<(), String> {
-    // Backwards-compatible command; uses the current DB connection to get DB path and open a new connection
-    let conn = state.conn.lock().map_err(|e| e.to_string())?;
-    let db_file: String = conn.query_row("PRAGMA database_list", [], |row| row.get::<_, String>(2)).unwrap_or_else(|_| ":memory:".to_string());
-    drop(conn);
-    let conn2 = Connection::open(db_file).map_err(|e| e.to_string())?;
-    exchange_code_for_token_with_conn(&conn2, code, state_param, "http://localhost:8080")
 }
 
 #[tauri::command]
@@ -485,6 +465,7 @@ pub fn clear_retry_metadata(state: tauri::State<DbState>) -> Result<(), String> 
 #[derive(Debug, Deserialize)]
 struct RestoreBackupData {
     version: String,
+    #[allow(dead_code)]
     exported_at: String,
     transacoes: Vec<serde_json::Value>,
     categorias: Vec<serde_json::Value>,

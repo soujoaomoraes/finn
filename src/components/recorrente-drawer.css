@@ -1,2 +1,13 @@
-/* components/recorrente-drawer.css — Estilos do drawer de recorrentes */
-/* Reutiliza os estilos do drawer.css */
+/* components/recorrente-drawer.css — ajustes específicos do drawer de recorrentes */
+
+#recorrente-drawer .drawer-body {
+  padding-bottom: 20px;
+}
+
+#recorrente-drawer .tabs {
+  width: 100%;
+}
+
+#recorrente-drawer .tab {
+  flex: 1;
+}

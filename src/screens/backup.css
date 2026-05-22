@@ -1,1 +1,64 @@
 /* screens/backup.css — Tela Backup */
+
+#sec-backup .card {
+  border: 1px solid var(--b1);
+  background: var(--s2);
+}
+
+.cloud-sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: var(--blue);
+  background: var(--bl10);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.cloud-sync-indicator svg {
+  width: 15px;
+  height: 15px;
+}
+
+.backup-status-card,
+.backup-restore-card {
+  max-width: 720px;
+}
+
+.backup-status-line {
+  margin: 14px 0 8px;
+}
+
+.backup-account {
+  color: var(--t1);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.backup-meta {
+  margin-top: 4px;
+  color: var(--t3);
+  font-size: 12px;
+}
+
+.backup-warning {
+  margin-top: 8px;
+  color: var(--t3);
+  font-size: 12px;
+}
+
+.backup-error {
+  margin-top: 10px;
+  color: var(--red);
+  font-size: 12px;
+}
+
+.backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}

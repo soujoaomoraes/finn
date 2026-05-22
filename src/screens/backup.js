@@ -8,6 +8,23 @@ import { showToast } from '../toast.js';
 let uploadDebounceTimer = null;
 let isConnecting = false;
 
+function formatBackupDate(value) {
+  if (!value) return 'Nunca';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).replace(',', ' às');
+}
+
+function setSyncing(isSyncing) {
+  document.getElementById('cloud-sync-indicator')?.classList.toggle('hidden', !isSyncing);
+}
+
 export function initBackup() {
   // Do not bind click handler here to avoid duplicate bindings; loadBackupStatus will set the single handler.
   const btnUpload = document.getElementById('btn-upload-backup');
@@ -52,12 +69,15 @@ async function triggerBackupUpload() {
 
   uploadDebounceTimer = setTimeout(async () => {
     try {
+      setSyncing(true);
       await invoke('upload_backup_to_drive');
       showToast('Backup enviado para o Google Drive');
       loadBackupStatus();
     } catch (error) {
       console.error('Error uploading backup:', error);
       showToast('Erro ao enviar backup');
+    } finally {
+      setSyncing(false);
     }
     uploadDebounceTimer = null;
   }, 1000); // 1 second debounce
@@ -77,16 +97,18 @@ async function loadBackupStatus() {
     
     if (statusDiv) {
       if (isConnected) {
+        const lastBackupLabel = formatBackupDate(lastBackup);
         let statusHtml = `
-          <p style="color: var(--green);">Conectado ao Google Drive</p>
-          <p style="font-size: 12px; color: var(--text3);">
-            Último backup: ${lastBackup || 'Nunca'}
-          </p>
+          <div class="backup-status-line">
+            <span class="status-chip is-active"><span></span>Conectado</span>
+          </div>
+          <p class="backup-account">Google Drive</p>
+          <p class="backup-meta">Último backup: ${lastBackupLabel}</p>
         `;
         
         if (lastError) {
           statusHtml += `
-            <p style="color: var(--red); font-size: 12px; margin-top: 8px;">
+            <p class="backup-error">
               Erro: ${lastError}
             </p>
           `;
@@ -134,9 +156,15 @@ async function loadBackupStatus() {
           btnRestore.style.display = 'inline-block';
         }
       } else {
-        let statusHtml = '<p>Não conectado ao Google Drive</p>';
+        let statusHtml = `
+          <div class="backup-status-line">
+            <span class="status-chip is-paused"><span></span>Desconectado</span>
+          </div>
+          <p class="backup-account">Backup opcional via Google Drive</p>
+          <p class="backup-meta">Seus dados continuam salvos localmente neste dispositivo.</p>
+        `;
         if (lastError) {
-          statusHtml += `<p style="color: var(--red); font-size: 12px; margin-top: 8px;">Erro: ${lastError}</p>`;
+          statusHtml += `<p class="backup-error">Erro: ${lastError}</p>`;
         }
         statusDiv.innerHTML = statusHtml;
         if (btnConnect) {
@@ -174,9 +202,13 @@ async function loadBackupStatus() {
     const historyDiv = document.getElementById('backup-history');
     if (historyDiv && lastBackup) {
       historyDiv.innerHTML = `
-        <div style="font-size: 12px;">
-          <p>Backup realizado em: ${lastBackup}</p>
-        </div>
+        <p class="backup-meta">Último ponto disponível: ${formatBackupDate(lastBackup)}</p>
+        <p class="backup-warning">Restaurar substitui os dados locais pelos dados do Drive.</p>
+      `;
+    } else if (historyDiv) {
+      historyDiv.innerHTML = `
+        <p class="backup-meta">Nenhum backup disponível para restauração.</p>
+        <p class="backup-warning">Conecte o Google Drive e faça um backup antes de restaurar.</p>
       `;
     }
   } catch (error) {

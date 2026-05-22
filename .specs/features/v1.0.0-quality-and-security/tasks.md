@@ -29,6 +29,8 @@ T1 ──┼→ T3 ─┼──→ T4 (depende do T3 para Drawer)
 ### Phase 3: Security & Observability (Parallel OK)
 *Mudanças no backend. A limpeza de `oauth.rs` (T10) destrava as integrações seguintes.*
 
+**Refatoração obrigatória nesta fase**: ao implementar T11–T13, quebrar o `oauth.rs` por responsabilidade para evitar que OAuth, backup, restore e armazenamento de tokens continuem concentrados em um único arquivo grande. A divisão deve preservar as assinaturas públicas expostas ao Tauri.
+
 ```text
          ┌→ T11 ─┐
 T10 ──┼→ T12 ─┤
@@ -58,8 +60,8 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick (`npm run build`)
 **Done when**:
-- [ ] Fonte Inter injetada e DMs removidas.
-- [ ] Todas as variáveis CSS atualizadas para os valores do `finledger_design_system_final.html`.
+- [x] Fonte Inter injetada e DMs removidas.
+- [x] Todas as variáveis CSS atualizadas para os valores do `finledger_design_system_final.html`.
 
 #### T10: [Limpeza oauth.rs]
 **What**: Remover `REDIRECT_URI`, `OAuthToken`, warnings e colocar allow dead_code.
@@ -68,7 +70,7 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick (`cargo check`)
 **Done when**:
-- [ ] O código não gera warnings durante o `cargo check`.
+- [x] O código não gera warnings durante o `cargo check`.
 
 ---
 
@@ -81,8 +83,8 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick
 **Done when**:
-- [ ] O form abre em um Drawer de 380px pela lateral direita.
-- [ ] Overlay aparece sob o Drawer; cliques no overlay fecham o drawer.
+- [x] O form abre em um Drawer de 380px pela lateral direita.
+- [x] Overlay aparece sob o Drawer; cliques no overlay fecham o drawer.
 
 #### T4: [Tela Transações - Visual e Filtros] [P]
 **What**: Ajustar visual da lista (dot color, badges pills) e filtros de 4 colunas.
@@ -91,7 +93,7 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick
 **Done when**:
-- [ ] Valores monetários verdes/vermelhos, rows com `--s3` de hover.
+- [x] Valores monetários verdes/vermelhos, rows com `--s3` de hover.
 
 #### T2: [Dashboard Completo] [P]
 **What**: Migrar Dashboard para grid de 4 colunas, evolução em linha SVG e barras de progresso empilhadas das categorias.
@@ -100,7 +102,7 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick
 **Done when**:
-- [ ] Painel reflete perfeitamente os mockups (month-nav integrado, SVG atualizando com pills).
+- [x] Painel reflete perfeitamente os mockups (month-nav integrado, SVG atualizando com pills).
 
 #### T5: [Drawer de Recorrente] [P]
 **What**: Reutilizar o componente drawer criado na T3 para o form de Nova Recorrente.
@@ -109,7 +111,7 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick
 **Done when**:
-- [ ] Drawer funciona perfeitamente para as Recorrentes com abas de tipo.
+- [x] Drawer funciona perfeitamente para as Recorrentes com abas de tipo.
 
 #### T6: [Tela Recorrentes - Visual] [P]
 **What**: Atualizar badges, cores e icon buttons na lista de recorrentes.
@@ -118,7 +120,7 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick
 **Done when**:
-- [ ] Status chips (Ativa/Pausada) e botões secundários atualizados.
+- [x] Status chips (Ativa/Pausada) e botões secundários atualizados.
 
 #### T7: [Tela Categorias - Visual] [P]
 **What**: Layout em 2 colunas e redesign do modal de Nova Categoria e paleta de swatches.
@@ -127,7 +129,7 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick
 **Done when**:
-- [ ] 12 cores de swatches, layout de 2 colunas alinhado ao topo.
+- [x] 12 cores de swatches, layout de 2 colunas alinhado ao topo.
 
 #### T8: [Tela Importar/Exportar] [P]
 **What**: Layout 2 colunas, visualização da área de Dropzone.
@@ -136,7 +138,7 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick
 **Done when**:
-- [ ] UI de inputs de data e área tracejada arrastável com states atualizados.
+- [x] UI de inputs de data e área tracejada arrastável com states atualizados.
 
 #### T9: [Tela Backup] [P]
 **What**: Card de status do Google Drive e Cloud indicator azul na Topbar.
@@ -145,38 +147,41 @@ T17 (O ideal é ocorrer após a Phase 2 estar completa)
 **Tests**: none
 **Gate**: quick
 **Done when**:
-- [ ] Último backup mostra timestamp formatado corretamente, e status chips sincronizando.
+- [x] Último backup mostra timestamp formatado corretamente, e status chips sincronizando.
 
 ---
 
 ### Phase 3: Security & Observability
 
 #### T11: [Logging Estruturado] [P]
-**What**: Instalar `log` e `env_logger` no Cargo.toml e espalhar nas operações cruciais do DB/OAuth.
+**What**: Instalar `log` e `env_logger` no Cargo.toml, espalhar nas operações cruciais do DB/OAuth e iniciar a separação do `oauth.rs` por responsabilidade quando tocar nos fluxos críticos.
 **Where**: `src-tauri/Cargo.toml`, `src-tauri/src/main.rs`, `src-tauri/src/db/*.rs`
 **Depends on**: T10
 **Tests**: none
 **Gate**: build (`cargo check`)
 **Done when**:
 - [ ] Substituição completa de `eprintln!` por logs da crate.
+- [ ] Fluxos de OAuth/backup afetados pela tarefa ficam em módulos coesos, sem concentrar novas responsabilidades em `oauth.rs`.
 
 #### T12: [Renovação Automática OAuth Token] [P]
-**What**: Validação `< 5min` antes do expirar no `backup.rs`, batendo na API para renovar silenciosamente.
-**Where**: `src-tauri/src/db/backup.rs`
+**What**: Validação `< 5min` antes do expirar no fluxo de backup, batendo na API para renovar silenciosamente, com a lógica de token extraída para módulo próprio.
+**Where**: `src-tauri/src/db/backup.rs`, `src-tauri/src/db/token_store.rs` (novo, se necessário), `src-tauri/src/db/oauth.rs`
 **Depends on**: T10
 **Tests**: none
 **Gate**: full
 **Done when**:
 - [ ] Upload ocorre silenciosamente com sucesso mesmo se passado mais de 1hr do login original.
+- [ ] Leitura, gravação e renovação de tokens não ficam misturadas ao listener/callback OAuth em `oauth.rs`.
 
 #### T13: [Armazenamento em Cofre Nativo] [P]
 **What**: Instalar tauri-plugin-stronghold; migrar a leitura/escrita dos tokens do SQLite para ele.
-**Where**: `src-tauri/src/db/oauth.rs`, `src-tauri/src/db/backup.rs`
+**Where**: `src-tauri/src/db/token_store.rs` (novo), `src-tauri/src/db/oauth.rs`, `src-tauri/src/db/backup.rs`
 **Depends on**: T10
 **Tests**: none
 **Gate**: full
 **Done when**:
 - [ ] Token nunca escrito no banco; app lembra da sessão após restartar.
+- [ ] Existe um módulo coeso de armazenamento seguro de tokens, usado por OAuth e Backup, sem duplicação de queries/metadata sensível.
 
 #### T14: [Encriptação SQLCipher] [P]
 **What**: Ativar cipher feature no `rusqlite` / tauri-sql, ler ou criar a DB-key no Vault, criar hook de migração do db em texto puro existente.

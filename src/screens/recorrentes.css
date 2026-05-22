@@ -1,1 +1,160 @@
 /* screens/recorrentes.css — Tela Recorrentes */
+
+.recorrente-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto minmax(116px, auto) 96px;
+  align-items: center;
+  gap: 12px;
+  min-height: 66px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--b1);
+}
+
+.recorrente-row:last-child {
+  border-bottom: none;
+}
+
+.recorrente-row:hover {
+  margin-inline: -10px;
+  padding-inline: 10px;
+  border-radius: 8px;
+  background: var(--s3);
+}
+
+.recorrente-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.recorrente-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.recorrente-icon.is-income {
+  color: var(--green);
+  background: var(--gn10);
+}
+
+.recorrente-icon.is-expense {
+  color: var(--red);
+  background: var(--rd10);
+}
+
+.recorrente-main {
+  min-width: 0;
+}
+
+.recorrente-title {
+  color: var(--t1);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recorrente-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  color: var(--t3);
+  font-size: 11px;
+}
+
+.recorrente-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.status-chip span {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+}
+
+.status-chip.is-active {
+  color: var(--green);
+  background: var(--gn10);
+}
+
+.status-chip.is-active span {
+  background: var(--green);
+}
+
+.status-chip.is-paused {
+  color: var(--t3);
+  background: var(--s3);
+}
+
+.status-chip.is-paused span {
+  background: var(--t3);
+}
+
+.recorrente-value {
+  text-align: right;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.recorrente-value.is-income {
+  color: var(--green);
+}
+
+.recorrente-value.is-expense {
+  color: var(--red);
+}
+
+.recorrente-value.is-muted {
+  color: var(--t3);
+}
+
+.recorrente-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.recorrente-actions .btn-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recorrente-actions .btn-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 920px) {
+  .recorrente-row {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+  }
+
+  .recorrente-value,
+  .recorrente-actions {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+}

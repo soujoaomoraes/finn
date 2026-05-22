@@ -12,7 +12,10 @@ function drawerTemplate() {
     <div class="drawer-overlay hidden" id="drawer-overlay">
       <div class="drawer" id="drawer">
         <div class="drawer-header">
-          <div class="drawer-title" id="drawer-title">Nova Transação</div>
+          <div>
+            <div class="drawer-title" id="drawer-title">Nova Transação</div>
+            <div class="drawer-subtitle">Lançamento financeiro</div>
+          </div>
           <button class="btn-icon" id="drawer-close" type="button" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l10 10M13 3L3 13"/></svg>
           </button>
@@ -47,10 +50,10 @@ function drawerTemplate() {
             <label>Observação (opcional)</label>
             <input type="text" id="f-obs" placeholder="Notas adicionais...">
           </div>
-          <div class="drawer-footer">
-            <button class="btn btn-ghost" type="button" data-drawer-close>Cancelar</button>
-            <button class="btn btn-primary" type="button" data-drawer-save>Salvar</button>
-          </div>
+        </div>
+        <div class="drawer-footer">
+          <button class="btn btn-primary" type="button" data-drawer-save>Salvar</button>
+          <button class="btn btn-ghost" type="button" data-drawer-close>Cancelar</button>
         </div>
       </div>
     </div>

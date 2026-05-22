@@ -1,14 +1,159 @@
 /* transacoes.css — Estilos específicos da tela Transações */
 
 .filter-bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  align-items: flex-end;
   margin-bottom: 20px;
-  flex-wrap: wrap;
+  align-items: end;
 }
+
+.filter-bar > div {
+  min-width: 0;
+}
+
 .filter-bar select,
 .filter-bar input {
-  width: auto;
-  min-width: 140px;
+  width: 100%;
+  min-width: 0;
+}
+
+#table-lancamentos table {
+  table-layout: fixed;
+}
+
+#table-lancamentos th:nth-child(1),
+#table-lancamentos td:nth-child(1) {
+  width: 108px;
+}
+
+#table-lancamentos th:nth-child(3),
+#table-lancamentos td:nth-child(3) {
+  width: 150px;
+}
+
+#table-lancamentos th:nth-child(4),
+#table-lancamentos td:nth-child(4) {
+  width: 112px;
+}
+
+#table-lancamentos th:nth-child(5),
+#table-lancamentos td:nth-child(5) {
+  width: 138px;
+}
+
+#table-lancamentos th:nth-child(6),
+#table-lancamentos td:nth-child(6) {
+  width: 82px;
+}
+
+#table-lancamentos tbody tr {
+  transition: background 150ms ease;
+}
+
+#table-lancamentos tbody tr:hover td {
+  background: var(--s3);
+}
+
+.tx-date {
+  color: var(--t2);
+  white-space: nowrap;
+}
+
+.tx-desc {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  font-weight: 500;
+}
+
+.tx-obs {
+  margin-top: 1px;
+  color: var(--t3);
+  font-size: 11px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tx-category {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-width: 0;
+  color: var(--t2);
+}
+
+.tx-category .cat-dot {
+  flex: 0 0 auto;
+}
+
+.tx-value {
+  text-align: right;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tx-value.is-income {
+  color: var(--green);
+}
+
+.tx-value.is-expense {
+  color: var(--red);
+}
+
+.tx-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.tx-actions .btn-icon,
+.recorrente-indicator {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tx-actions .btn-icon svg,
+.recorrente-indicator svg {
+  width: 15px;
+  height: 15px;
+}
+
+.recorrente-indicator {
+  width: 18px;
+  height: 18px;
+  color: var(--orange);
+  border-radius: 999px;
+  background: var(--og10);
+}
+
+.recorrente-indicator svg {
+  width: 12px;
+  height: 12px;
+}
+
+.btn-icon-danger:hover {
+  background: var(--rd10);
+  border-color: rgba(248, 113, 113, 0.2);
+  color: var(--red);
+}
+
+@media (max-width: 980px) {
+  .filter-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .filter-bar {
+    grid-template-columns: 1fr;
+  }
 }

@@ -84,19 +84,42 @@ export function renderLancamentos() {
         const c = _categorias.find(x => x.nome === t.categoria);
         const cor = c ? c.cor : '#94a3b8';
         const recorrenteIcon = t.recorrente_id
-          ? `<span class="recorrente-indicator" title="Transação recorrente">🔄</span>`
+          ? `<span class="recorrente-indicator" title="Transação recorrente" aria-label="Transação recorrente">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M13 5A5 5 0 0 0 4.4 3.2L3 4.7"/>
+                <path d="M3 2v2.7h2.7"/>
+                <path d="M3 11a5 5 0 0 0 8.6 1.8L13 11.3"/>
+                <path d="M13 14v-2.7h-2.7"/>
+              </svg>
+            </span>`
           : '';
         return `<tr>
-          <td style="color:var(--text2);white-space:nowrap">${fmtDate(t.data)}</td>
-          <td>${t.descricao}${t.obs ? `<div style="font-size:11px;color:var(--text3)">${t.obs}</div>` : ''} ${recorrenteIcon}</td>
-          <td><span class="cat-dot" style="background:${cor}"></span>${t.categoria}</td>
+          <td class="tx-date">${fmtDate(t.data)}</td>
+          <td>
+            <div class="tx-desc">${t.descricao}${recorrenteIcon}</div>
+            ${t.obs ? `<div class="tx-obs">${t.obs}</div>` : ''}
+          </td>
+          <td><span class="tx-category"><span class="cat-dot" style="background:${cor}"></span>${t.categoria}</span></td>
           <td><span class="badge ${t.tipo === 'receita' ? 'badge-green' : 'badge-red'}">${t.tipo}</span></td>
-          <td style="text-align:right;font-weight:500;color:${t.tipo === 'receita' ? 'var(--green)' : 'var(--red)'}">
+          <td class="tx-value ${t.tipo === 'receita' ? 'is-income' : 'is-expense'}">
             ${t.tipo === 'receita' ? '+' : '-'}${fmt(t.valor)}
           </td>
-          <td style="white-space:nowrap;text-align:right;">
-            <button class="btn-icon" data-edit="${t.id}" title="Editar">✏️</button>
-            <button class="btn-icon" data-delete="${t.id}" title="Excluir" style="margin-left:4px">🗑️</button>
+          <td class="tx-actions">
+            <button class="btn-icon" data-edit="${t.id}" title="Editar" aria-label="Editar transação">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9.8 3.2 12.8 6.2"/>
+                <path d="M4 12l1-3.2 6.7-6.7a1.5 1.5 0 0 1 2.1 2.1L7.1 10.9 4 12Z"/>
+                <path d="M3 13h10"/>
+              </svg>
+            </button>
+            <button class="btn-icon btn-icon-danger" data-delete="${t.id}" title="Excluir" aria-label="Excluir transação">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 4h10"/>
+                <path d="M6 4V2.8h4V4"/>
+                <path d="M5 6v6M8 6v6M11 6v6"/>
+                <path d="M4.5 4 5 14h6l.5-10"/>
+              </svg>
+            </button>
           </td>
         </tr>`;
       }).join('')}
