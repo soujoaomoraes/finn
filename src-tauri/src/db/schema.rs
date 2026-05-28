@@ -1,8 +1,11 @@
-use rusqlite::{Connection, Result};
-use std::path::PathBuf;
+use rusqlite::Connection;
+use std::path::{Path, PathBuf};
 
-pub fn init(db_path: PathBuf) -> Result<()> {
-    let conn = Connection::open(&db_path)?;
+pub fn init(db_path: PathBuf, db_key: &str) -> Result<(), String> {
+    migrate_plaintext_database_if_needed(&db_path, db_key)?;
+
+    let conn = Connection::open(&db_path).map_err(|e| e.to_string())?;
+    conn.pragma_update(None, "key", db_key).map_err(|e| e.to_string())?;
 
     // Cria as tabelas
     conn.execute(
@@ -13,7 +16,7 @@ pub fn init(db_path: PathBuf) -> Result<()> {
             cor       TEXT    NOT NULL
         );",
         [],
-    )?;
+    ).map_err(|e| e.to_string())?;
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS transacoes (
@@ -27,7 +30,7 @@ pub fn init(db_path: PathBuf) -> Result<()> {
             recorrente_id INTEGER DEFAULT NULL
         );",
         [],
-    )?;
+    ).map_err(|e| e.to_string())?;
 
     // Add recorrente_id column if it doesn't exist (idempotent migration)
     let _ = conn.execute(
@@ -50,7 +53,7 @@ pub fn init(db_path: PathBuf) -> Result<()> {
             data_inicio       TEXT    NOT NULL
         );",
         [],
-    )?;
+    ).map_err(|e| e.to_string())?;
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS backup_metadata (
@@ -58,10 +61,12 @@ pub fn init(db_path: PathBuf) -> Result<()> {
             value TEXT NOT NULL
         );",
         [],
-    )?;
+    ).map_err(|e| e.to_string())?;
 
     // Verifica seed
-    let count: i64 = conn.query_row("SELECT COUNT(*) FROM categorias", [], |row| row.get(0))?;
+    let count: i64 = conn
+        .query_row("SELECT COUNT(*) FROM categorias", [], |row| row.get(0))
+        .map_err(|e| e.to_string())?;
 
     if count == 0 {
         conn.execute_batch(
@@ -77,8 +82,74 @@ pub fn init(db_path: PathBuf) -> Result<()> {
             ('Freelance', 'receita', '#34d399'),
             ('Investimentos', 'receita', '#fbbf24'),
             ('Outros', 'receita', '#94a3b8');"
-        )?;
+        ).map_err(|e| e.to_string())?;
     }
 
     Ok(())
+}
+
+fn migrate_plaintext_database_if_needed(db_path: &Path, db_key: &str) -> Result<(), String> {
+    if !db_path.exists() || encrypted_database_opens(db_path, db_key) {
+        return Ok(());
+    }
+
+    if !plaintext_database_opens(db_path) {
+        return Err("Database exists, but it is neither readable with the SQLCipher key nor as plaintext".to_string());
+    }
+
+    log::warn!("Migrating existing plaintext database to SQLCipher");
+
+    let encrypted_path = db_path.with_extension("encrypted.tmp");
+    let backup_path = db_path.with_extension("plaintext.bak");
+    let _ = std::fs::remove_file(&encrypted_path);
+
+    {
+        let conn = Connection::open(db_path).map_err(|e| e.to_string())?;
+        let encrypted_path_sql = sql_quote(&encrypted_path.to_string_lossy());
+        let key_sql = sql_quote(db_key);
+
+        conn.execute_batch(&format!(
+            "ATTACH DATABASE '{}' AS encrypted KEY '{}';
+             SELECT sqlcipher_export('encrypted');
+             DETACH DATABASE encrypted;",
+            encrypted_path_sql, key_sql
+        ))
+        .map_err(|e| e.to_string())?;
+    }
+
+    if backup_path.exists() {
+        std::fs::remove_file(&backup_path).map_err(|e| e.to_string())?;
+    }
+
+    std::fs::rename(db_path, &backup_path).map_err(|e| e.to_string())?;
+    std::fs::rename(&encrypted_path, db_path).map_err(|e| e.to_string())?;
+
+    log::info!(
+        "Plaintext database migrated to SQLCipher; backup kept at {}",
+        backup_path.display()
+    );
+    Ok(())
+}
+
+fn encrypted_database_opens(db_path: &Path, db_key: &str) -> bool {
+    let Ok(conn) = Connection::open(db_path) else {
+        return false;
+    };
+    if conn.pragma_update(None, "key", db_key).is_err() {
+        return false;
+    }
+    conn.query_row("SELECT count(*) FROM sqlite_master", [], |row| row.get::<_, i64>(0))
+        .is_ok()
+}
+
+fn plaintext_database_opens(db_path: &Path) -> bool {
+    let Ok(conn) = Connection::open(db_path) else {
+        return false;
+    };
+    conn.query_row("SELECT count(*) FROM sqlite_master", [], |row| row.get::<_, i64>(0))
+        .is_ok()
+}
+
+fn sql_quote(value: &str) -> String {
+    value.replace('\'', "''")
 }
