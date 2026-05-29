@@ -1,6 +1,6 @@
-# FinLedger 💰
+# Finn - Finanças pessoais 💰
 
-**FinLedger** é um aplicativo desktop leve e rápido para gestão de finanças pessoais. Ele permite o controle offline e seguro de suas receitas e despesas, visualização de saldos mensais e importação de dados através de planilhas de forma super intuitiva.
+**Finn** é um aplicativo desktop leve e rápido para gestão de finanças pessoais. Ele permite o controle offline e seguro de suas receitas e despesas, visualização de saldos mensais e importação de dados através de planilhas de forma super intuitiva.
 
 ![Demonstração da interface do FinLedger](image.png)
 
