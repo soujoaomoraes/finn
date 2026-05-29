@@ -4,7 +4,7 @@ use crate::db::DbState;
 use std::fs::File;
 use std::io::Write;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Transacao {
     pub id: Option<i64>,
     pub descricao: String,
@@ -14,6 +14,45 @@ pub struct Transacao {
     pub categoria: String,
     pub obs: String,
     pub recorrente_id: Option<i64>,
+}
+
+impl Default for Transacao {
+    fn default() -> Self {
+        Self {
+            id: None,
+            descricao: "".to_string(),
+            valor: 0.0,
+            data: "2026-01-01".to_string(),
+            tipo: "despesa".to_string(),
+            categoria: "".to_string(),
+            obs: "".to_string(),
+            recorrente_id: None,
+        }
+    }
+}
+
+pub fn save_transacao_internal(conn: &rusqlite::Connection, transacao: &Transacao) -> Result<i64, String> {
+    match transacao.id {
+        Some(id) if id > 0 => {
+            conn.execute(
+                "UPDATE transacoes SET descricao = ?1, valor = ?2, data = ?3, tipo = ?4, categoria = ?5, obs = ?6, recorrente_id = ?7 WHERE id = ?8",
+                params![&transacao.descricao, transacao.valor, &transacao.data, &transacao.tipo, &transacao.categoria, &transacao.obs, transacao.recorrente_id, id],
+            ).map_err(|e| e.to_string())?;
+            Ok(id)
+        }
+        _ => {
+            conn.execute(
+                "INSERT INTO transacoes (descricao, valor, data, tipo, categoria, obs, recorrente_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+                params![&transacao.descricao, transacao.valor, &transacao.data, &transacao.tipo, &transacao.categoria, &transacao.obs, transacao.recorrente_id],
+            ).map_err(|e| e.to_string())?;
+            Ok(conn.last_insert_rowid())
+        }
+    }
+}
+
+pub fn delete_transacao_internal(conn: &rusqlite::Connection, id: i64) -> Result<(), String> {
+    conn.execute("DELETE FROM transacoes WHERE id = ?1", params![id]).map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -114,4 +153,82 @@ pub fn export_csv(start_date: String, end_date: String, file_path: String, state
     }
     
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::db::test_utils::test_db_connection;
+
+    fn setup_test_conn() -> rusqlite::Connection {
+        test_db_connection().unwrap()
+    }
+
+    #[test]
+    fn test_save_transacao_insert() {
+        let conn = setup_test_conn();
+        let transacao = Transacao {
+            id: None,
+            descricao: "Mercado".to_string(),
+            valor: 150.00,
+            data: "2026-05-15".to_string(),
+            tipo: "despesa".to_string(),
+            categoria: "Alimentação".to_string(),
+            obs: "".to_string(),
+            recorrente_id: None,
+        };
+
+        let id = save_transacao_internal(&conn, &transacao).unwrap();
+        assert!(id > 0);
+    }
+
+    #[test]
+    fn test_save_transacao_update() {
+        let conn = setup_test_conn();
+
+        let transacao = Transacao {
+            id: None,
+            descricao: "Mercado".to_string(),
+            valor: 150.00,
+            data: "2026-05-15".to_string(),
+            tipo: "despesa".to_string(),
+            categoria: "Alimentação".to_string(),
+            obs: "".to_string(),
+            recorrente_id: None,
+        };
+
+        let id = save_transacao_internal(&conn, &transacao).unwrap();
+
+        let updated = Transacao {
+            id: Some(id),
+            descricao: "Mercado atualizado".to_string(),
+            valor: 200.00,
+            ..Default::default()
+        };
+
+        let result = save_transacao_internal(&conn, &updated).unwrap();
+        assert_eq!(result, id);
+    }
+
+    #[test]
+    fn test_delete_transacao() {
+        let conn = setup_test_conn();
+
+        let transacao = Transacao {
+            id: None,
+            descricao: "Teste".to_string(),
+            valor: 50.00,
+            data: "2026-05-15".to_string(),
+            tipo: "despesa".to_string(),
+            categoria: "Alimentação".to_string(),
+            obs: "".to_string(),
+            recorrente_id: None,
+        };
+
+        let id = save_transacao_internal(&conn, &transacao).unwrap();
+        delete_transacao_internal(&conn, id).unwrap();
+
+        let count: i64 = conn.query_row("SELECT COUNT(*) FROM transacoes WHERE id = ?1", params![id], |r| r.get(0)).unwrap_or(0);
+        assert_eq!(count, 0);
+    }
 }

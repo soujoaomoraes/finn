@@ -103,40 +103,68 @@ pub fn toggle_recorrente(id: i64, state: tauri::State<DbState>) -> Result<(), St
     Ok(())
 }
 
-pub fn calculate_next_due_date(current_date: &str, frequency: &str, day_of_month: Option<i32>) -> Result<String, String> {
+pub fn calculate_next_due_date(
+    current_date: &str,
+    frequency: &str,
+    day_of_month: Option<i32>,
+) -> Result<String, String> {
     let date = NaiveDate::parse_from_str(current_date, "%Y-%m-%d")
         .map_err(|e| format!("Invalid date format: {}", e))?;
 
     let next_date = match frequency {
         "mensal" => {
             if let Some(day) = day_of_month {
-                // Use the specified day of month
-                let next_month = if date.day() as i32 >= day {
-                    date + Duration::days(32)
+                let (next_year, next_month) = if date.day() as i32 >= day {
+                    get_next_month_date(date)
                 } else {
-                    date
+                    (date.year(), date.month())
                 };
-                let mut next = NaiveDate::from_ymd_opt(next_month.year(), next_month.month(), day as u32)
-                    .ok_or_else(|| "Invalid day for month".to_string())?;
-                // If we went to next month but the day doesn't exist (e.g., Feb 30), use last day of month
-                if next.day() as i32 != day && next.month() != date.month() {
-                    next = NaiveDate::from_ymd_opt(next.year(), next.month(), 1).unwrap()
-                        .with_month(next.month()).unwrap()
-                        .with_day(1).unwrap()
-                        - Duration::days(1);
-                }
-                next
+
+                let last_day = max_day_in_month(next_year, next_month);
+                let target_day = day.min(last_day);
+
+                NaiveDate::from_ymd_opt(next_year, next_month, target_day as u32)
+                    .ok_or_else(|| format!("Invalid day {} for month {}/{}", target_day, next_month, next_year))?
             } else {
-                // Same day next month
-                date + Duration::days(32)
+                let (next_year, next_month) = get_next_month_date(date);
+                NaiveDate::from_ymd_opt(next_year, next_month, date.day())
+                    .ok_or_else(|| "Invalid day for month".to_string())?
             }
         }
         "semanal" => date + Duration::days(7),
         "quinzenal" => date + Duration::days(14),
+        "anual" => {
+            date + Duration::days(365)
+        }
         _ => return Err(format!("Invalid frequency: {}", frequency)),
     };
 
     Ok(next_date.format("%Y-%m-%d").to_string())
+}
+
+fn max_day_in_month(year: i32, month: u32) -> i32 {
+    match month {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        2 => {
+            if (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0) {
+                29
+            } else {
+                28
+            }
+        }
+        _ => 30,
+    }
+}
+
+fn get_next_month_date(date: NaiveDate) -> (i32, u32) {
+    let year = date.year();
+    let month = date.month();
+    if month == 12 {
+        (year + 1, 1)
+    } else {
+        (year, month + 1)
+    }
 }
 
 #[tauri::command]
@@ -169,12 +197,10 @@ pub fn generate_due_recorrentes(state: tauri::State<DbState>) -> Result<i32, Str
     for (id, descricao, valor, tipo, categoria, obs, frequencia, dia_vencimento, proximo_vencimento, _data_inicio) in recorrentes {
         let mut current_proximo = proximo_vencimento.clone();
 
-        // Generate transactions for all due dates
         loop {
             let next_date = calculate_next_due_date(&current_proximo, &frequencia, dia_vencimento)?;
 
             if next_date > today {
-                // Update the recorrente's proximo_vencimento
                 conn.execute(
                     "UPDATE recorrentes SET proximo_vencimento = ?1 WHERE id = ?2",
                     params![current_proximo, id],
@@ -182,7 +208,6 @@ pub fn generate_due_recorrentes(state: tauri::State<DbState>) -> Result<i32, Str
                 break;
             }
 
-            // Create transaction for this due date
             conn.execute(
                 "INSERT INTO transacoes (descricao, valor, data, tipo, categoria, obs, recorrente_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
                 params![descricao, valor, current_proximo, tipo, categoria, obs, id],
@@ -194,4 +219,58 @@ pub fn generate_due_recorrentes(state: tauri::State<DbState>) -> Result<i32, Str
     }
 
     Ok(generated_count)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_mensal_varios_meses_atrasados() {
+        let mut current = "2026-02-05".to_string();
+        let mut dates = Vec::new();
+        let today = "2026-05-15";
+
+        for _ in 0..3 {
+            let next = calculate_next_due_date(&current, "mensal", Some(5)).unwrap();
+            if next.as_str() >= today { break; }
+            dates.push(next.clone());
+            current = next;
+        }
+
+        assert_eq!(dates.len(), 3);
+        assert_eq!(dates[0], "2026-03-05");
+        assert_eq!(dates[1], "2026-04-05");
+        assert_eq!(dates[2], "2026-05-05");
+    }
+
+    #[test]
+    fn test_clamp_dia_31_fevereiro() {
+        let next = calculate_next_due_date("2026-01-31", "mensal", Some(31)).unwrap();
+        assert_eq!(next, "2026-02-28");
+    }
+
+    #[test]
+    fn test_semanal_7_dias() {
+        let next = calculate_next_due_date("2026-05-10", "semanal", None).unwrap();
+        assert_eq!(next, "2026-05-17");
+    }
+
+    #[test]
+    fn test_anual_365_dias() {
+        let next = calculate_next_due_date("2025-03-15", "anual", Some(15)).unwrap();
+        assert_eq!(next, "2026-03-15");
+    }
+
+    #[test]
+    fn test_quinzenal_14_dias() {
+        let next = calculate_next_due_date("2026-05-01", "quinzenal", None).unwrap();
+        assert_eq!(next, "2026-05-15");
+    }
+
+    #[test]
+    fn test_dia_inicio_nao_gera_antes() {
+        let result = calculate_next_due_date("2026-05-01", "mensal", Some(5)).unwrap();
+        assert!(result.as_str() > "2026-05-01" || result == "2026-05-05");
+    }
 }

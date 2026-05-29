@@ -7,6 +7,9 @@ pub mod schema;
 pub mod token_store;
 pub mod transacoes;
 
+#[cfg(test)]
+pub mod test_utils;
+
 use rusqlite::Connection;
 use std::sync::Mutex;
 

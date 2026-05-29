@@ -1,365 +1,416 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FinLedger</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinLedger</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="/src/styles.css">
+  <link rel="stylesheet" href="/src/styles.css">
 </head>
+
 <body>
-<div class="app">
+  <div class="app">
 
-<!-- SIDEBAR -->
-<nav class="sb" aria-label="Navegação principal">
-  <div class="sb-logo">
-    <div class="sb-wordmark">FinLedger</div>
-    <div class="sb-sub">finanças pessoais</div>
-  </div>
-  <div class="sb-nav">
-    <div class="sb-sec">Visão Geral</div>
-    <div class="sb-item on" id="nav-dashboard">
-      <div class="pip"></div>Dashboard
-    </div>
-    <div class="sb-sec">Lançamentos</div>
-    <div class="sb-item" id="nav-lancamentos">
-      <div class="pip"></div>Transações
-    </div>
-    <div class="sb-item" id="nav-recorrentes">
-      <div class="pip"></div>Recorrentes
-    </div>
-    <div class="sb-sec">Configurações</div>
-    <div class="sb-item" id="nav-categorias">
-      <div class="pip"></div>Categorias
-    </div>
-    <div class="sb-item" id="nav-importar">
-      <div class="pip"></div>Importar / Exportar
-    </div>
-    <div class="sb-item" id="nav-backup">
-      <div class="pip"></div>Backup
-    </div>
-  </div>
-  <div class="sb-footer"><div class="sb-version">v1.1 · warm dark</div></div>
-</nav>
+    <!-- SIDEBAR -->
+    <nav class="sb" aria-label="Navegação principal">
+      <div class="sb-logo">
+        <div class="sb-wordmark">Finn</div>
+        <div class="sb-sub">finanças pessoais</div>
+      </div>
+      <div class="sb-nav">
+        <div class="sb-sec">Visão Geral</div>
+        <div class="sb-item on" id="nav-dashboard">
+          <div class="pip"></div>Dashboard
+        </div>
+        <div class="sb-sec">Lançamentos</div>
+        <div class="sb-item" id="nav-lancamentos">
+          <div class="pip"></div>Transações
+        </div>
+        <div class="sb-item" id="nav-recorrentes">
+          <div class="pip"></div>Recorrentes
+        </div>
+        <div class="sb-sec">Configurações</div>
+        <div class="sb-item" id="nav-categorias">
+          <div class="pip"></div>Categorias
+        </div>
+        <div class="sb-item" id="nav-importar">
+          <div class="pip"></div>Importar / Exportar
+        </div>
+        <div class="sb-item" id="nav-backup">
+          <div class="pip"></div>Backup
+        </div>
+      </div>
+      <div class="sb-footer">
+        <div class="sb-version">v1.1 · warm dark</div>
+      </div>
+    </nav>
 
-<!-- MAIN -->
-<main class="main">
+    <!-- MAIN -->
+    <main class="main">
 
-  <!-- DASHBOARD -->
-  <section class="section active" id="sec-dashboard">
-    <header class="hdr">
-      <div>
-        <div class="hdr-title">Dashboard</div>
-        <div class="hdr-sub">Resumo financeiro mensal</div>
-      </div>
-      <div class="hdr-right">
-        <div class="month-nav" role="group" aria-label="Navegar mês">
-          <span class="mnb" onclick="changeMonth(-1)" aria-label="Mês anterior">‹</span>
-          <span id="month-label">Mai 2025</span>
-          <span class="mnb" onclick="changeMonth(1)" aria-label="Próximo mês">›</span>
-        </div>
-        <button class="btn btn-primary" onclick="openDrawer()" aria-label="Nova transação">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Nova transação
-        </button>
-      </div>
-    </header>
-
-    <!-- METRIC CARDS -->
-    <div class="cards" aria-label="Resumo do mês">
-      <div class="mc">
-        <div class="mc-top">
-          <div class="mc-label">Receitas</div>
-          <div class="mc-ico" style="background:var(--gn10);color:var(--green)">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M6.5 10.5V2.5M2.5 6.5l4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-        </div>
-        <div class="mc-val colored-g" id="d-receitas">R$ 0</div>
-        <div class="mc-sub">no mês</div>
-      </div>
-      <div class="mc">
-        <div class="mc-top">
-          <div class="mc-label">Despesas</div>
-          <div class="mc-ico" style="background:var(--rd10);color:var(--red)">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M6.5 2.5v8M2.5 6.5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-        </div>
-        <div class="mc-val colored-r" id="d-despesas">R$ 0</div>
-        <div class="mc-sub">no mês</div>
-      </div>
-      <div class="mc">
-        <div class="mc-top">
-          <div class="mc-label">Saldo do mês</div>
-          <div class="mc-ico" style="background:var(--ab10);color:var(--amber)">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 6.5h9M7.5 3.5l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-        </div>
-        <div class="mc-val" style="color:var(--amber)" id="d-saldo">R$ 0</div>
-        <div class="mc-sub">receitas − despesas</div>
-      </div>
-      <div class="mc">
-        <div class="mc-top">
-          <div class="mc-label">Acumulado</div>
-          <div class="mc-ico" style="background:var(--bl10);color:var(--blue)">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 9.5l3-3.5 2.5 2L10 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-        </div>
-        <div class="mc-val" style="color:var(--blue)" id="d-acumulado">R$ 0</div>
-        <div class="mc-sub">total geral</div>
-      </div>
-    </div>
-
-    <!-- BOTTOM ROW -->
-    <div class="bot">
-      <!-- CHART -->
-      <div class="chart-panel">
-        <div class="chart-header">
+      <!-- DASHBOARD -->
+      <section class="section active" id="sec-dashboard">
+        <header class="hdr">
           <div>
-            <div class="panel-title">Evolução mensal</div>
+            <div class="hdr-title">Dashboard</div>
+            <div class="hdr-sub">Resumo financeiro mensal</div>
           </div>
-          <div class="chart-badge" id="d-chart-trend" style="display: none;">
-            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true"><path d="M1 5.5l2-2.5 1.5 1.5L7 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span id="trend-text">+12% vs mês anterior</span>
+          <div class="hdr-right">
+            <div class="month-nav" role="group" aria-label="Navegar mês">
+              <span class="mnb" onclick="changeMonth(-1)" aria-label="Mês anterior">‹</span>
+              <span id="month-label">Mai 2025</span>
+              <span class="mnb" onclick="changeMonth(1)" aria-label="Próximo mês">›</span>
+            </div>
+            <button class="btn btn-primary" onclick="openDrawer()" aria-label="Nova transação">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+              Nova transação
+            </button>
+          </div>
+        </header>
+
+        <!-- METRIC CARDS -->
+        <div class="cards" aria-label="Resumo do mês">
+          <div class="mc">
+            <div class="mc-top">
+              <div class="mc-label">Receitas</div>
+              <div class="mc-ico" style="background:var(--gn10);color:var(--green)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                  <path d="M6.5 10.5V2.5M2.5 6.5l4-4 4 4" stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div class="mc-val colored-g" id="d-receitas">R$ 0</div>
+            <div class="mc-sub">no mês</div>
+          </div>
+          <div class="mc">
+            <div class="mc-top">
+              <div class="mc-label">Despesas</div>
+              <div class="mc-ico" style="background:var(--rd10);color:var(--red)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                  <path d="M6.5 2.5v8M2.5 6.5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div class="mc-val colored-r" id="d-despesas">R$ 0</div>
+            <div class="mc-sub">no mês</div>
+          </div>
+          <div class="mc">
+            <div class="mc-top">
+              <div class="mc-label">Saldo do mês</div>
+              <div class="mc-ico" style="background:var(--ab10);color:var(--amber)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                  <path d="M2 6.5h9M7.5 3.5l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div class="mc-val" style="color:var(--amber)" id="d-saldo">R$ 0</div>
+            <div class="mc-sub">receitas − despesas</div>
+          </div>
+          <div class="mc">
+            <div class="mc-top">
+              <div class="mc-label">Acumulado</div>
+              <div class="mc-ico" style="background:var(--bl10);color:var(--blue)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                  <path d="M2 9.5l3-3.5 2.5 2L10 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div class="mc-val" style="color:var(--blue)" id="d-acumulado">R$ 0</div>
+            <div class="mc-sub">total geral</div>
           </div>
         </div>
-        <div class="chart-kpi" id="d-acumulado-kpi">R$ 0,00</div>
-        <div class="chart-kpi-sub" id="d-acumulado-sub">acumulado até Mai 2025</div>
 
-        <div class="chart-wrap" id="monthly-chart"></div>
-      </div>
+        <!-- BOTTOM ROW -->
+        <div class="bot">
+          <!-- CHART -->
+          <div class="chart-panel">
+            <div class="chart-header">
+              <div>
+                <div class="panel-title">Evolução mensal</div>
+              </div>
+              <div class="chart-badge" id="d-chart-trend" style="display: none;">
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
+                  <path d="M1 5.5l2-2.5 1.5 1.5L7 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <span id="trend-text">+12% vs mês anterior</span>
+              </div>
+            </div>
+            <div class="chart-kpi" id="d-acumulado-kpi">R$ 0,00</div>
+            <div class="chart-kpi-sub" id="d-acumulado-sub">acumulado até Mai 2025</div>
 
-      <!-- GASTOS POR CATEGORIA -->
-      <div class="cats-panel">
-        <div class="cats-head">
-          <div class="panel-title">Gastos por categoria</div>
-          <span style="font-size:10.5px;color:var(--orange);cursor:pointer;letter-spacing:-.1px;" onclick="go('categorias')">ver todas →</span>
+            <div class="chart-wrap" id="monthly-chart"></div>
+          </div>
+
+          <!-- GASTOS POR CATEGORIA -->
+          <div class="cats-panel">
+            <div class="cats-head">
+              <div class="panel-title">Gastos por categoria</div>
+              <span style="font-size:10.5px;color:var(--orange);cursor:pointer;letter-spacing:-.1px;"
+                onclick="go('categorias')">ver todas →</span>
+            </div>
+            <div id="cat-breakdown"></div>
+            <div class="cats-total" id="cats-total-footer"></div>
+          </div>
         </div>
-        <div id="cat-breakdown"></div>
-        <div class="cats-total" id="cats-total-footer"></div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- TRANSAÇÕES -->
-  <section class="section" id="sec-lancamentos">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Transações</div>
-        <div class="page-subtitle">Todos os seus lançamentos</div>
-      </div>
-      <button class="btn btn-primary" onclick="openDrawer()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Nova transação
-      </button>
-    </div>
+      <!-- TRANSAÇÕES -->
+      <section class="section" id="sec-lancamentos">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Transações</div>
+            <div class="page-subtitle">Todos os seus lançamentos</div>
+          </div>
+          <button class="btn btn-primary" onclick="openDrawer()">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            Nova transação
+          </button>
+        </div>
 
-    <div class="filter-bar">
-      <div><label>Mês</label>
-        <select id="filter-mes" onchange="renderLancamentos()"></select>
-      </div>
-      <div><label>Tipo</label>
-        <select id="filter-tipo" onchange="renderLancamentos()">
-          <option value="">Todos</option>
-          <option value="receita">Receita</option>
-          <option value="despesa">Despesa</option>
-        </select>
-      </div>
-      <div><label>Categoria</label>
-        <select id="filter-cat" onchange="renderLancamentos()">
-          <option value="">Todas</option>
-        </select>
-      </div>
-      <div><label>Busca</label>
-        <input type="text" id="filter-busca" placeholder="Descrição..." oninput="renderLancamentos()">
-      </div>
-    </div>
+        <div class="filter-bar">
+          <div><label>Mês</label>
+            <select id="filter-mes" onchange="renderLancamentos()"></select>
+          </div>
+          <div><label>Tipo</label>
+            <select id="filter-tipo" onchange="renderLancamentos()">
+              <option value="">Todos</option>
+              <option value="receita">Receita</option>
+              <option value="despesa">Despesa</option>
+            </select>
+          </div>
+          <div><label>Categoria</label>
+            <select id="filter-cat" onchange="renderLancamentos()">
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <div><label>Busca</label>
+            <input type="text" id="filter-busca" placeholder="Descrição..." oninput="renderLancamentos()">
+          </div>
+        </div>
 
-    <div class="card" style="padding: 0; overflow: hidden;">
-      <div id="table-lancamentos"></div>
-    </div>
-    <div style="margin-top: 12px; font-size: 12px; color: var(--text3);" id="table-summary"></div>
-  </section>
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div id="table-lancamentos"></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 12px; color: var(--text3);" id="table-summary"></div>
+      </section>
 
-  <!-- CATEGORIAS -->
-  <section class="section" id="sec-categorias">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Categorias</div>
-        <div class="page-subtitle">Organize seus lançamentos</div>
-      </div>
-      <button type="button" class="btn btn-primary" data-action="nova-categoria">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Nova categoria
-      </button>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title cat-section-title">Despesas</div>
-        <div id="list-cats-despesa"></div>
-      </div>
-      <div class="card">
-        <div class="card-title cat-section-title">Receitas</div>
-        <div id="list-cats-receita"></div>
-      </div>
-    </div>
-  </section>
+      <!-- CATEGORIAS -->
+      <section class="section" id="sec-categorias">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Categorias</div>
+            <div class="page-subtitle">Organize seus lançamentos</div>
+          </div>
+          <button type="button" class="btn btn-primary" data-action="nova-categoria">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            Nova categoria
+          </button>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title cat-section-title">Despesas</div>
+            <div id="list-cats-despesa"></div>
+          </div>
+          <div class="card">
+            <div class="card-title cat-section-title">Receitas</div>
+            <div id="list-cats-receita"></div>
+          </div>
+        </div>
+      </section>
 
-  <!-- RECORRENTES -->
-  <section class="section" id="sec-recorrentes">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Recorrentes</div>
-        <div class="page-subtitle">Gerencie suas transações recorrentes</div>
-      </div>
-      <button class="btn btn-primary" id="btn-nova-recorrente">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Nova recorrente
-      </button>
-    </div>
-    <div class="card">
-      <div id="recorrentes-list"></div>
-    </div>
-  </section>
+      <!-- RECORRENTES -->
+      <section class="section" id="sec-recorrentes">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Recorrentes</div>
+            <div class="page-subtitle">Gerencie suas transações recorrentes</div>
+          </div>
+          <button class="btn btn-primary" id="btn-nova-recorrente">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            Nova recorrente
+          </button>
+        </div>
+        <div class="card">
+          <div id="recorrentes-list"></div>
+        </div>
+      </section>
 
-  <!-- IMPORTAR -->
-  <section class="section" id="sec-importar">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Importar Planilha</div>
-        <div class="page-subtitle">Importe transações de um arquivo Excel ou CSV</div>
-      </div>
-    </div>
-    
-    <!-- Export Section -->
-    <div class="card" style="margin-bottom: 20px;">
-      <div class="card-title export-section-title">Exportar dados</div>
-      <div class="export-section-subtitle">Baixe suas transações em CSV para usar em planilhas</div>
-      <div class="export-period-selector">
+      <!-- IMPORTAR -->
+      <section class="section" id="sec-importar">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Importar Planilha</div>
+            <div class="page-subtitle">Importe transações de um arquivo Excel ou CSV</div>
+          </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-title export-section-title">Exportar dados</div>
+          <div class="export-section-subtitle">Baixe suas transações em CSV para usar em planilhas</div>
+          <div class="export-period-selector">
+            <div class="form-group">
+              <label>Data início</label>
+              <input type="date" id="export-start-date">
+            </div>
+            <div class="form-group">
+              <label>Data fim</label>
+              <input type="date" id="export-end-date">
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btn-export-csv">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M6 1v6M3 4l3 3 3-3M1 9h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            Exportar CSV
+          </button>
+        </div>
+
+        <div class="card card-import-max">
+          <div class="dropzone" id="dropzone">
+            <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path d="M4 16l4-4 4 4 4-8 4 4M4 20h16" />
+            </svg>
+            <p class="import-dropzone-hint">Arraste seu arquivo aqui ou clique para selecionar</p>
+            <p class="import-dropzone-formats">Suporta .xlsx, .xls e .csv</p>
+            <input type="file" id="file-input" accept=".xlsx,.xls,.csv" class="hidden">
+          </div>
+
+          <div class="import-format-callout">
+            <p class="import-format-title">Formato esperado da planilha</p>
+            <div class="import-format-table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>15/01/2025</td>
+                    <td>Supermercado</td>
+                    <td>250.00</td>
+                    <td>despesa</td>
+                    <td>Alimentação</td>
+                  </tr>
+                  <tr>
+                    <td>01/01/2025</td>
+                    <td>Salário</td>
+                    <td>3500.00</td>
+                    <td>receita</td>
+                    <td>Trabalho</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="import-format-footnote">A coluna "Tipo" deve conter "receita" ou "despesa". A categoria será
+              criada automaticamente se não existir.</p>
+          </div>
+
+          <div id="import-preview" class="hidden">
+            <div class="card-title import-preview-title">Prévia da importação</div>
+            <div id="import-table"></div>
+            <div class="import-preview-actions">
+              <button type="button" class="btn btn-primary" data-import-confirm>Importar tudo</button>
+              <button type="button" class="btn btn-ghost" data-import-cancel>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BACKUP -->
+      <section class="section" id="sec-backup">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Backup</div>
+            <div class="page-subtitle">Sincronize seus dados com o Google Drive</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Status da Sincronização</div>
+          <div id="backup-status">
+            <p>Não conectado ao Google Drive</p>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="btn btn-primary" id="btn-connect-drive">Conectar ao Google Drive</button>
+            <button class="btn btn-primary" id="btn-upload-backup" style="display: none;">Fazer Backup Agora</button>
+            <button class="btn btn-primary" id="btn-retry-backup" style="display: none;">Tentar Novamente</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Histórico de Backups</div>
+          <div id="backup-history">
+            <p style="color: var(--text3);">Nenhum backup realizado</p>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="btn btn-primary" id="btn-restore-backup" style="display: none;">Restaurar Backup</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL CATEGORIA -->
+  <div class="modal-overlay hidden" id="modal-cat-overlay">
+    <div class="modal">
+      <div class="modal-title" id="modal-cat-title">Nova Categoria</div>
+      <input type="hidden" id="mc-id">
+      <div class="form-row">
         <div class="form-group">
-          <label>Data início</label>
-          <input type="date" id="export-start-date">
+          <label>Nome</label>
+          <input type="text" id="mc-nome" placeholder="Ex: Alimentação">
         </div>
         <div class="form-group">
-          <label>Data fim</label>
-          <input type="date" id="export-end-date">
+          <label>Tipo</label>
+          <select id="mc-tipo">
+            <option value="despesa">Despesa</option>
+            <option value="receita">Receita</option>
+          </select>
         </div>
-      </div>
-      <button class="btn btn-primary" id="btn-export-csv">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v6M3 4l3 3 3-3M1 9h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Exportar CSV
-      </button>
-    </div>
-
-    <div class="card card-import-max">
-      <div class="dropzone" id="dropzone">
-        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4-4 4 4 4-8 4 4M4 20h16"/></svg>
-        <p class="import-dropzone-hint">Arraste seu arquivo aqui ou clique para selecionar</p>
-        <p class="import-dropzone-formats">Suporta .xlsx, .xls e .csv</p>
-        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" class="hidden">
-      </div>
-
-      <div class="import-format-callout">
-        <p class="import-format-title">Formato esperado da planilha</p>
-        <div class="import-format-table-wrap">
-        <table>
-          <thead><tr>
-            <th>Data</th><th>Descrição</th><th>Valor</th><th>Tipo</th><th>Categoria</th>
-          </tr></thead>
-          <tbody><tr>
-            <td>15/01/2025</td><td>Supermercado</td><td>250.00</td><td>despesa</td><td>Alimentação</td>
-          </tr><tr>
-            <td>01/01/2025</td><td>Salário</td><td>3500.00</td><td>receita</td><td>Trabalho</td>
-          </tr></tbody>
-        </table>
-        </div>
-        <p class="import-format-footnote">A coluna "Tipo" deve conter "receita" ou "despesa". A categoria será criada automaticamente se não existir.</p>
-      </div>
-
-      <div id="import-preview" class="hidden">
-        <div class="card-title import-preview-title">Prévia da importação</div>
-        <div id="import-table"></div>
-        <div class="import-preview-actions">
-          <button type="button" class="btn btn-primary" data-import-confirm>Importar tudo</button>
-          <button type="button" class="btn btn-ghost" data-import-cancel>Cancelar</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BACKUP -->
-  <section class="section" id="sec-backup">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Backup</div>
-        <div class="page-subtitle">Sincronize seus dados com o Google Drive</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Status da Sincronização</div>
-      <div id="backup-status">
-        <p>Não conectado ao Google Drive</p>
-      </div>
-      <div style="margin-top: 20px;">
-        <button class="btn btn-primary" id="btn-connect-drive">Conectar ao Google Drive</button>
-        <button class="btn btn-primary" id="btn-upload-backup" style="display: none;">Fazer Backup Agora</button>
-        <button class="btn btn-primary" id="btn-retry-backup" style="display: none;">Tentar Novamente</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Histórico de Backups</div>
-      <div id="backup-history">
-        <p style="color: var(--text3);">Nenhum backup realizado</p>
-      </div>
-      <div style="margin-top: 20px;">
-        <button class="btn btn-primary" id="btn-restore-backup" style="display: none;">Restaurar Backup</button>
-      </div>
-    </div>
-  </section>
-
-</main>
-</div>
-
-<!-- MODAL CATEGORIA -->
-<div class="modal-overlay hidden" id="modal-cat-overlay">
-  <div class="modal">
-    <div class="modal-title" id="modal-cat-title">Nova Categoria</div>
-    <input type="hidden" id="mc-id">
-    <div class="form-row">
-      <div class="form-group">
-        <label>Nome</label>
-        <input type="text" id="mc-nome" placeholder="Ex: Alimentação">
       </div>
       <div class="form-group">
-        <label>Tipo</label>
-        <select id="mc-tipo">
-          <option value="despesa">Despesa</option>
-          <option value="receita">Receita</option>
-        </select>
+        <label>Cor</label>
+        <div class="color-swatches" id="color-swatches"></div>
       </div>
-    </div>
-    <div class="form-group">
-      <label>Cor</label>
-      <div class="color-swatches" id="color-swatches"></div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-ghost" data-cat-cancel>Cancelar</button>
-      <button type="button" class="btn btn-primary" data-cat-save>Salvar</button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" data-cat-cancel>Cancelar</button>
+        <button type="button" class="btn btn-primary" data-cat-save>Salvar</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- DRAWER TRANSAÇÃO -->
-<div id="drawer-root"></div>
-<div id="recorrente-drawer-root"></div>
+  <!-- DRAWER TRANSAÇÃO -->
+  <div id="drawer-root"></div>
+  <div id="recorrente-drawer-root"></div>
 
-<!-- TOAST -->
-<div id="toast"></div>
+  <!-- TOAST -->
+  <div id="toast"></div>
 
-<script src="/src/assets/xlsx.full.min.js"></script>
-<script type="module" src="/src/main.js"></script>
+  <script src="/src/assets/xlsx.full.min.js"></script>
+  <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>
