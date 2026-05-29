@@ -20,16 +20,9 @@
         "minHeight": 600,
         "resizable": true
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
-  "plugins": {
-    "sql": {
-      "preload": ["sqlite:finledger.db"]
-    }
-  },
+  "plugins": {},
   "bundle": {
     "active": true,
     "targets": "all",
