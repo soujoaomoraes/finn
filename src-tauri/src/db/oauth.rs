@@ -63,8 +63,8 @@ pub fn connect_google_drive(
     )
     .map_err(|e| e.to_string())?;
 
-    let listener = TcpListener::bind("127.0.0.1:0")
-        .map_err(|e| format!("Failed to bind loopback: {}", e))?;
+    let listener =
+        TcpListener::bind("127.0.0.1:0").map_err(|e| format!("Failed to bind loopback: {}", e))?;
     let local_port = listener.local_addr().map_err(|e| e.to_string())?.port();
     let redirect_uri = format!("http://127.0.0.1:{}", local_port);
     let redirect_uri_clone = redirect_uri.clone();
@@ -141,7 +141,6 @@ pub fn connect_google_drive(
                         &redirect_uri_clone,
                     )?;
                     token_store::store_tokens(
-                        &db_state.vault,
                         &token.access_token,
                         token.refresh_token.as_deref(),
                         token.expires_in_secs,
@@ -272,7 +271,7 @@ fn exchange_code_for_token_with_conn(
 
 #[tauri::command]
 pub fn disconnect_google_drive(state: tauri::State<DbState>) -> Result<(), String> {
-    token_store::clear_tokens(&state.vault)?;
+    token_store::clear_tokens()?;
 
     let conn = state.conn.lock().map_err(|e| e.to_string())?;
     conn.execute("DELETE FROM backup_metadata WHERE key LIKE 'drive_%'", [])
@@ -288,6 +287,6 @@ pub fn disconnect_google_drive(state: tauri::State<DbState>) -> Result<(), Strin
 }
 
 #[tauri::command]
-pub fn is_drive_connected(state: tauri::State<DbState>) -> Result<bool, String> {
-    token_store::get_access_token(&state.vault).map(|token| token.is_some())
+pub fn is_drive_connected(_state: tauri::State<DbState>) -> Result<bool, String> {
+    token_store::get_access_token().map(|token| token.is_some())
 }
