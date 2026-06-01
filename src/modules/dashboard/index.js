@@ -1,6 +1,6 @@
 // screens/dashboard.js — Tela Dashboard v1.1 Warm Dark
-import './dashboard.css';
-import { fmt } from '../utils.js';
+import './styles.css';
+import { fmt } from '../../core/utils.js';
 
 let _transacoes = [];
 let _categorias = [];

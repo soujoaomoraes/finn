@@ -1,6 +1,6 @@
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
-use crate::db::DbState;
+use crate::infrastructure::db::DbState;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Categoria {

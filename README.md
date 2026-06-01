@@ -8,9 +8,9 @@
 
 Este projeto foi construído focando em performance, baixo consumo de memória e total privacidade dos dados (tudo fica no seu computador).
 
-- **Frontend:** HTML5, CSS3 e Vanilla JavaScript (sem frameworks pesados).
-- **Backend:** [Tauri 2](https://v2.tauri.app/) e [Rust](https://www.rust-lang.org/) para a comunicação com o sistema operacional.
-- **Banco de Dados:** SQLite embutido via `tauri-plugin-sql` para armazenar transações e categorias localmente.
+- **Frontend:** HTML5, CSS3 e Vanilla JavaScript (sem frameworks pesados) com arquitetura **Vertical Slice** por módulo de feature.
+- **Backend:** [Tauri 2](https://v2.tauri.app/) e [Rust](https://www.rust-lang.org/) para comunicação com o sistema operacional.
+- **Banco de Dados:** SQLite criptografado via **SQLCipher + rusqlite**, com chave armazenada no keyring nativo do SO via Tauri Stronghold.
 
 ## 📦 Funcionalidades Principais
 
@@ -33,6 +33,7 @@ Em breve, você poderá simplesmente baixar o executável, instalar e usar o Fin
 - [Node.js](https://nodejs.org/)
 - [Rust](https://www.rust-lang.org/tools/install)
 - Dependências de compilação do Tauri para seu SO (Siga o guia [aqui](https://v2.tauri.app/start/prerequisites/)).
+- **Windows:** [Strawberry Perl](https://strawberryperl.com/) no PATH (necessário para compilar o SQLCipher/OpenSSL).
 
 ### Instalação e Execução
 

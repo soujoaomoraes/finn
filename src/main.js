@@ -1,15 +1,15 @@
-import { getAllTransacoes, getAllCategorias, saveTransacao, saveCategoria, deleteTransacao } from './db.js';
-import { showToast } from './toast.js';
-import { go as goToSection } from './router.js';
-import { initSidebar, setSidebarActive } from './components/sidebar.js';
-import { initDrawer, openDrawer, closeDrawer, isDrawerOpen, updateDrawerCategories } from './components/drawer.js';
-import { initDashboard, updateDashboardState, renderDashboard } from './screens/dashboard.js';
-import { initTransacoes, updateTransacoesState, populateFilters, renderLancamentos } from './screens/transacoes.js';
-import { initCategorias, renderCategorias, renderColorSwatches, fecharModalCategoria, bindNovaCategoriaButton } from './screens/categorias.js';
-import { initImportar } from './screens/importar.js';
-import { initRecorrentes } from './screens/recorrentes.js';
-import { closeRecorrenteDrawer, isRecorrenteDrawerOpen } from './components/recorrente-drawer.js';
-import { initBackup, markBackupDirty } from './screens/backup.js';
+import { getAllTransacoes, getAllCategorias, saveTransacao, saveCategoria, deleteTransacao } from './core/db.js';
+import { showToast } from './core/toast.js';
+import { go as goToSection } from './core/router.js';
+import { initSidebar, setSidebarActive } from './shared/sidebar.js';
+import { initDrawer, openDrawer, closeDrawer, isDrawerOpen, updateDrawerCategories } from './modules/transactions/drawer.js';
+import { initDashboard, updateDashboardState, renderDashboard } from './modules/dashboard/index.js';
+import { initTransacoes, updateTransacoesState, populateFilters, renderLancamentos } from './modules/transactions/index.js';
+import { initCategorias, renderCategorias, renderColorSwatches, fecharModalCategoria, bindNovaCategoriaButton } from './modules/categories/index.js';
+import { initImportar } from './modules/import-export/index.js';
+import { initRecorrentes } from './modules/recurring/index.js';
+import { closeRecorrenteDrawer, isRecorrenteDrawerOpen } from './modules/recurring/drawer.js';
+import { initBackup, markBackupDirty } from './modules/backup/index.js';
 import { save } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -59,7 +59,7 @@ async function salvarTransacao(transacao) {
     transacoes.push(transacao);
   }
 
-  const d = new Date(transacao.data);
+  const d = new Date(transacao.data + 'T12:00:00');
   currentMonth = d.getMonth();
   currentYear = d.getFullYear();
   syncScreenState();
@@ -222,5 +222,4 @@ async function init() {
   renderLancamentos();
   renderCategorias();
 }
-
 init();

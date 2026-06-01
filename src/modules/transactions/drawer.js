@@ -1,7 +1,7 @@
 // components/drawer.js — Drawer lateral de nova/editar transação
 import './drawer.css';
-import { setTodayDate } from '../utils.js';
-import { showToast } from '../toast.js';
+import { setTodayDate } from '../../core/utils.js';
+import { showToast } from '../../core/toast.js';
 
 let getCategorias = () => [];
 let onSave = async () => {};

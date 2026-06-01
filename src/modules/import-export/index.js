@@ -1,9 +1,9 @@
 // screens/importar.js — Tela Importar Planilha
-import './importar.css';
-import { parseDate, fmt, fmtDate } from '../utils.js';
-import { showToast } from '../toast.js';
-import { saveTransacao, saveCategoria } from '../db.js';
-import { COLORS } from './categorias.js';
+import './styles.css';
+import { parseDate, fmt, fmtDate } from '../../core/utils.js';
+import { showToast } from '../../core/toast.js';
+import { saveTransacao, saveCategoria } from '../../core/db.js';
+import { COLORS } from '../categories/index.js';
 
 let _getTransacoes = () => [];
 let _getCategorias = () => [];

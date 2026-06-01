@@ -1,9 +1,9 @@
 // screens/recorrentes.js — Tela Recorrentes
-import './recorrentes.css';
+import './styles.css';
 import { invoke } from '@tauri-apps/api/core';
-import { showToast } from '../toast.js';
-import { initRecorrenteDrawer, openRecorrenteDrawer, updateRecorrenteDrawerCategories } from '../components/recorrente-drawer.js';
-import { fmt, fmtDate } from '../utils.js';
+import { showToast } from '../../core/toast.js';
+import { initRecorrenteDrawer, openRecorrenteDrawer, updateRecorrenteDrawerCategories } from './drawer.js';
+import { fmt, fmtDate } from '../../core/utils.js';
 
 let _recorrentes = [];
 let _categorias = [];

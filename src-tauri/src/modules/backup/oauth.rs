@@ -1,4 +1,5 @@
-use crate::db::{token_store, DbState};
+use crate::infrastructure::db::DbState;
+use crate::infrastructure::vault::token_store;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use rand::Rng;
 use rusqlite::Connection;

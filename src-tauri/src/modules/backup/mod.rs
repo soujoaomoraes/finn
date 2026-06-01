@@ -1,8 +1,12 @@
-use crate::db::{
-    backup_models::{BackupData, RestoreBackupData},
-    token_store, DbState,
-};
+use crate::infrastructure::db::DbState;
+use crate::infrastructure::vault::token_store;
+use self::models::{BackupData, RestoreBackupData};
 use rusqlite::params;
+use log;
+use serde_json;
+
+pub mod oauth;
+mod models;
 
 fn google_client_id() -> &'static str {
     env!("GOOGLE_CLIENT_ID")

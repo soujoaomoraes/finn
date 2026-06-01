@@ -1,8 +1,6 @@
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
-use crate::db::DbState;
-use std::fs::File;
-use std::io::Write;
+use crate::infrastructure::db::DbState;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Transacao {
@@ -31,6 +29,7 @@ impl Default for Transacao {
     }
 }
 
+#[allow(dead_code)]
 pub fn save_transacao_internal(conn: &rusqlite::Connection, transacao: &Transacao) -> Result<i64, String> {
     match transacao.id {
         Some(id) if id > 0 => {
@@ -50,6 +49,7 @@ pub fn save_transacao_internal(conn: &rusqlite::Connection, transacao: &Transaca
     }
 }
 
+#[allow(dead_code)]
 pub fn delete_transacao_internal(conn: &rusqlite::Connection, id: i64) -> Result<(), String> {
     conn.execute("DELETE FROM transacoes WHERE id = ?1", params![id]).map_err(|e| e.to_string())?;
     Ok(())
@@ -107,58 +107,11 @@ pub fn delete_transacao(id: i64, state: tauri::State<DbState>) -> Result<(), Str
     Ok(())
 }
 
-#[tauri::command]
-pub fn export_csv(start_date: String, end_date: String, file_path: String, state: tauri::State<DbState>) -> Result<(), String> {
-    let conn = state.conn.lock().map_err(|e| e.to_string())?;
-    
-    let mut stmt = conn.prepare(
-        "SELECT data, descricao, valor, tipo, categoria FROM transacoes WHERE data >= ?1 AND data <= ?2 ORDER BY data"
-    ).map_err(|e| e.to_string())?;
-    
-    let transacoes = stmt.query_map(params![start_date, end_date], |row| {
-        Ok((
-            row.get::<_, String>(0)?,
-            row.get::<_, String>(1)?,
-            row.get::<_, f64>(2)?,
-            row.get::<_, String>(3)?,
-            row.get::<_, String>(4)?,
-        ))
-    }).map_err(|e| e.to_string())?
-    .filter_map(|r| r.ok())
-    .collect::<Vec<_>>();
-
-    let mut file = File::create(&file_path).map_err(|e| e.to_string())?;
-    
-    // Escreve o BOM do UTF-8 para que o Excel identifique os acentos corretamente
-    file.write_all(b"\xEF\xBB\xBF").map_err(|e| e.to_string())?;
-    
-    // CSV header usando ponto e vírgula para compatibilidade com Excel PT-BR
-    writeln!(file, "Data;Descrição;Valor;Tipo;Categoria").map_err(|e| e.to_string())?;
-    
-    // CSV rows
-    for (data, descricao, valor, tipo, categoria) in transacoes {
-        // Converte a data de YYYY-MM-DD para DD/MM/YYYY
-        let data_br = {
-            let parts: Vec<&str> = data.split('-').collect();
-            if parts.len() == 3 {
-                format!("{}/{}/{}", parts[2], parts[1], parts[0])
-            } else {
-                data.clone()
-            }
-        };
-        // Formata o valor com vírgula para decimal
-        let valor_br = format!("{:.2}", valor).replace('.', ",");
-        
-        writeln!(file, "{};{};{};{};{}", data_br, descricao, valor_br, tipo, categoria).map_err(|e| e.to_string())?;
-    }
-    
-    Ok(())
-}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::db::test_utils::test_db_connection;
+    use crate::infrastructure::db::test_utils::test_db_connection;
 
     fn setup_test_conn() -> rusqlite::Connection {
         test_db_connection().unwrap()
@@ -210,25 +163,27 @@ mod tests {
         assert_eq!(result, id);
     }
 
-    #[test]
-    fn test_delete_transacao() {
-        let conn = setup_test_conn();
+     #[test]
+     fn test_delete_transacao() {
+         let conn = setup_test_conn();
 
-        let transacao = Transacao {
-            id: None,
-            descricao: "Teste".to_string(),
-            valor: 50.00,
-            data: "2026-05-15".to_string(),
-            tipo: "despesa".to_string(),
-            categoria: "Alimentação".to_string(),
-            obs: "".to_string(),
-            recorrente_id: None,
-        };
+         let transacao = Transacao {
+             id: None,
+             descricao: "Teste".to_string(),
+             valor: 50.00,
+             data: "2026-05-15".to_string(),
+             tipo: "despesa".to_string(),
+             categoria: "Alimentação".to_string(),
+             obs: "".to_string(),
+             recorrente_id: None,
+         };
 
-        let id = save_transacao_internal(&conn, &transacao).unwrap();
-        delete_transacao_internal(&conn, id).unwrap();
+         let id = save_transacao_internal(&conn, &transacao).unwrap();
+         delete_transacao_internal(&conn, id).unwrap();
 
-        let count: i64 = conn.query_row("SELECT COUNT(*) FROM transacoes WHERE id = ?1", params![id], |r| r.get(0)).unwrap_or(0);
-        assert_eq!(count, 0);
-    }
-}
+         let count: i64 = conn.query_row("SELECT COUNT(*) FROM transacoes WHERE id = ?1", params![id], |r| r.get(0)).unwrap_or(0);
+         assert_eq!(count, 0);
+     }
+ }
+
+ pub mod export;

@@ -1,7 +1,7 @@
 // screens/categorias.js — Tela Categorias + modal
-import './categorias.css';
-import { saveCategoria, deleteCategoria } from '../db.js';
-import { showToast } from '../toast.js';
+import './styles.css';
+import { saveCategoria, deleteCategoria } from '../../core/db.js';
+import { showToast } from '../../core/toast.js';
 
 export const COLORS = [
   '#f87171', '#fb923c', '#fbbf24', '#a3e635', '#4ade80', '#34d399', '#22d3ee',

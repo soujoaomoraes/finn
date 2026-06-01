@@ -1,6 +1,8 @@
-mod db;
+mod infrastructure;
+mod modules;
 
-use db::{backup, categorias, oauth, recorrentes, schema, token_store, transacoes, DbState};
+use infrastructure::db::DbState;
+use modules::{backup, categories, recurring, transactions};
 use rusqlite::Connection;
 use std::sync::Mutex;
 use tauri::Manager;
@@ -22,9 +24,9 @@ pub fn run() {
             let db_path = app_data_dir.join("finledger.db");
 
             let db_key =
-                token_store::get_or_create_db_key().expect("Failed to load SQLCipher database key");
+                infrastructure::vault::token_store::get_or_create_db_key().expect("Failed to load SQLCipher database key");
 
-            schema::init(db_path.clone(), &db_key).expect("Failed to initialize database schema");
+            infrastructure::db::schema::init(db_path.clone(), &db_key).expect("Failed to initialize database schema");
 
             let conn = Connection::open(&db_path).expect("Failed to open connection");
             conn.pragma_update(None, "key", &db_key)
@@ -37,26 +39,26 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            categorias::get_all_categorias,
-            categorias::save_categoria,
-            categorias::delete_categoria,
-            transacoes::get_all_transacoes,
-            transacoes::save_transacao,
-            transacoes::delete_transacao,
-            transacoes::export_csv,
-            recorrentes::get_all_recorrentes,
-            recorrentes::save_recorrente,
-            recorrentes::delete_recorrente,
-            recorrentes::toggle_recorrente,
-            recorrentes::generate_due_recorrentes,
+            categories::get_all_categorias,
+            categories::save_categoria,
+            categories::delete_categoria,
+            transactions::get_all_transacoes,
+            transactions::save_transacao,
+            transactions::delete_transacao,
+            transactions::export::export_csv,
+            recurring::get_all_recorrentes,
+            recurring::save_recorrente,
+            recurring::delete_recorrente,
+            recurring::toggle_recorrente,
+            recurring::generate_due_recorrentes,
             backup::save_backup_metadata,
             backup::get_backup_metadata,
             backup::upload_backup_to_drive,
             backup::clear_retry_metadata,
             backup::restore_from_drive,
-            oauth::connect_google_drive,
-            oauth::disconnect_google_drive,
-            oauth::is_drive_connected
+            backup::oauth::connect_google_drive,
+            backup::oauth::disconnect_google_drive,
+            backup::oauth::is_drive_connected
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

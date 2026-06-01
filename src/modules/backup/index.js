@@ -1,9 +1,9 @@
 // screens/backup.js — Tela Backup
-import './backup.css';
+import './styles.css';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { openUrl } from '@tauri-apps/plugin-opener';
-import { showToast } from '../toast.js';
+import { showToast } from '../../core/toast.js';
 
 let uploadDebounceTimer = null;
 let isConnecting = false;

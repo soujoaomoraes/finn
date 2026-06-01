@@ -1,6 +1,6 @@
 // screens/transacoes.js — Tela Transações
-import './transacoes.css';
-import { fmt, fmtDate } from '../utils.js';
+import './styles.css';
+import { fmt, fmtDate } from '../../core/utils.js';
 
 let _transacoes = [];
 let _categorias = [];

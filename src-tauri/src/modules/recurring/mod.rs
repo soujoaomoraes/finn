@@ -1,6 +1,6 @@
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
-use crate::db::DbState;
+use crate::infrastructure::db::DbState;
 use chrono::{Duration, NaiveDate, Datelike};
 
 #[derive(Debug, Serialize, Deserialize)]

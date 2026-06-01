@@ -1,6 +1,6 @@
 // components/recorrente-drawer.js — Drawer para nova/editar recorrente
-import './recorrente-drawer.css';
-import { showToast } from '../toast.js';
+import './drawer.css';
+import { showToast } from '../../core/toast.js';
 
 let getCategorias = () => [];
 let onSave = async () => {};

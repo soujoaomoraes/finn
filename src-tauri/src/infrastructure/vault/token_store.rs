@@ -7,6 +7,7 @@ const SERVICE: &str = "finledger";
 const TOKEN_REFRESH_THRESHOLD_SECS: i64 = 300;
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct TokenData {
     pub access_token: String,
     pub refresh_token: Option<String>,
