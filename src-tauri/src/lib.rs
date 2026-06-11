@@ -2,7 +2,7 @@ mod infrastructure;
 mod modules;
 
 use infrastructure::db::DbState;
-use modules::{backup, categories, recurring, transactions};
+use modules::{backup, categories, recurring, transactions, reserves, metas};
 use rusqlite::Connection;
 use std::sync::Mutex;
 use tauri::Manager;
@@ -58,7 +58,13 @@ pub fn run() {
             backup::restore_from_drive,
             backup::oauth::connect_google_drive,
             backup::oauth::disconnect_google_drive,
-            backup::oauth::is_drive_connected
+            backup::oauth::is_drive_connected,
+            reserves::get_reserva_saldos,
+            reserves::transferir_reserva,
+            metas::get_all_metas,
+            metas::save_meta,
+            metas::delete_meta,
+            metas::toggle_meta
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -10,6 +10,7 @@ import { initImportar } from './modules/import-export/index.js';
 import { initRecorrentes } from './modules/recurring/index.js';
 import { closeRecorrenteDrawer, isRecorrenteDrawerOpen } from './modules/recurring/drawer.js';
 import { initBackup, markBackupDirty } from './modules/backup/index.js';
+import { initMetas, onNavigateMetas } from './modules/metas/index.js';
 import { save } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -36,6 +37,7 @@ function go(sec) {
   if (sec === 'dashboard') renderDashboard();
   if (sec === 'lancamentos') renderLancamentos();
   if (sec === 'categorias') renderCategorias();
+  if (sec === 'metas') void onNavigateMetas();
 }
 
 function changeMonth(delta) {
@@ -100,6 +102,7 @@ document.addEventListener('keydown', (event) => {
     if (isDrawerOpen()) closeDrawer();
     if (isRecorrenteDrawerOpen()) closeRecorrenteDrawer();
     fecharModalCategoria();
+    document.getElementById('modal-meta-overlay')?.classList.add('hidden');
   }
 });
 
@@ -214,6 +217,10 @@ async function init() {
   });
 
   initBackup();
+
+  initMetas({
+    getCategorias: () => categorias,
+  });
 
   updateMonthLabel();
   renderColorSwatches();

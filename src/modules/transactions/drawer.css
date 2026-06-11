@@ -93,3 +93,66 @@
 .drawer-footer .btn-ghost {
   flex: 0 0 auto;
 }
+
+/* ── Aba Reserva ─────────────────────────────────────────────────── */
+.tab-reserva.active {
+  color: var(--purple) !important;
+}
+
+/* ── Origem do dinheiro ──────────────────────────────────────────── */
+.origem-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.origem-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 13px;
+  border-radius: 9px;
+  border: 1px solid var(--b2);
+  background: var(--s3);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.origem-opt.on {
+  border-color: var(--orange);
+  background: rgba(249, 115, 22, 0.06);
+}
+
+.origem-radio {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--b3);
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.origem-opt.on .origem-radio {
+  border-color: var(--orange);
+  background: var(--orange);
+}
+
+.origem-label {
+  font-size: 12px;
+  color: var(--t2);
+  flex: 1;
+}
+
+.origem-opt.on .origem-label {
+  color: var(--t1);
+}
+
+.origem-saldo {
+  font-size: 10px;
+  color: var(--t3);
+  white-space: nowrap;
+}
+
+/* ── Save button transition ──────────────────────────────────────── */
+#drawer-save-btn {
+  transition: background 0.2s;
+}

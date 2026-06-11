@@ -44,7 +44,7 @@ export function initCategorias({ getCategorias, onAfterMutation }) {
     });
   }
 
-  ['despesa', 'receita'].forEach((tipo) => {
+  ['despesa', 'receita', 'reserva'].forEach((tipo) => {
     const div = document.getElementById('list-cats-' + tipo);
     if (!div) return;
     div.addEventListener('click', (e) => {
@@ -81,7 +81,7 @@ export function renderColorSwatches() {
 
 export function renderCategorias() {
   const categorias = _getCategorias();
-  ['despesa', 'receita'].forEach((tipo) => {
+  ['despesa', 'receita', 'reserva'].forEach((tipo) => {
     const div = document.getElementById('list-cats-' + tipo);
     if (!div) return;
     const cats = categorias.filter((c) => c.tipo === tipo);

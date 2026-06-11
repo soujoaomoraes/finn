@@ -34,6 +34,10 @@
         <div class="sb-item" id="nav-recorrentes">
           <div class="pip"></div>Recorrentes
         </div>
+        <div class="sb-sec">Planejamento</div>
+        <div class="sb-item" id="nav-metas">
+          <div class="pip"></div>Metas
+        </div>
         <div class="sb-sec">Configurações</div>
         <div class="sb-item" id="nav-categorias">
           <div class="pip"></div>Categorias
@@ -116,52 +120,40 @@
             <div class="mc-val" style="color:var(--amber)" id="d-saldo">R$ 0</div>
             <div class="mc-sub">receitas − despesas</div>
           </div>
+
           <div class="mc">
             <div class="mc-top">
-              <div class="mc-label">Acumulado</div>
-              <div class="mc-ico" style="background:var(--bl10);color:var(--blue)">
+              <div class="mc-label">Reservado</div>
+              <div class="mc-ico" style="background:rgba(192,132,252,.10);color:#c084fc">
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                  <path d="M2 9.5l3-3.5 2.5 2L10 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-                    stroke-linejoin="round" />
+                  <path d="M2 10h9M6.5 3v5M4 5.5l2.5-2.5 2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </div>
             </div>
-            <div class="mc-val" style="color:var(--blue)" id="d-acumulado">R$ 0</div>
-            <div class="mc-sub">total geral</div>
+            <div class="mc-val" style="color:#c084fc" id="d-reservado">R$ 0</div>
+            <div class="mc-sub">guardado em reservas</div>
           </div>
         </div>
 
         <!-- BOTTOM ROW -->
         <div class="bot">
-          <!-- CHART -->
-          <div class="chart-panel">
-            <div class="chart-header">
-              <div>
-                <div class="panel-title">Evolução mensal</div>
-              </div>
-              <div class="chart-badge" id="d-chart-trend" style="display: none;">
-                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
-                  <path d="M1 5.5l2-2.5 1.5 1.5L7 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
-                <span id="trend-text">+12% vs mês anterior</span>
-              </div>
-            </div>
-            <div class="chart-kpi" id="d-acumulado-kpi">R$ 0,00</div>
-            <div class="chart-kpi-sub" id="d-acumulado-sub">acumulado até Mai 2025</div>
 
-            <div class="chart-wrap" id="monthly-chart"></div>
-          </div>
 
-          <!-- GASTOS POR CATEGORIA -->
+          <!-- SANKEY FLUXO FINANCEIRO -->
           <div class="cats-panel">
-            <div class="cats-head">
-              <div class="panel-title">Gastos por categoria</div>
-              <span style="font-size:10.5px;color:var(--orange);cursor:pointer;letter-spacing:-.1px;"
-                onclick="go('categorias')">ver todas →</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <div>
+                <div class="panel-title">Fluxo financeiro do mês</div>
+                <div style="font-size:11px;color:var(--t3);margin-top:3px;font-weight:400;">Origem dos recursos e como se distribuem</div>
+              </div>
+              <div style="font-size:11px;color:var(--t4);" id="d-sankey-total"></div>
             </div>
-            <div id="cat-breakdown"></div>
-            <div class="cats-total" id="cats-total-footer"></div>
+            <div id="sankey-receitas" style="height:230px;overflow:hidden;"></div>
+            <div style="display:none;">
+              <div style="margin:16px 0;border-top:1px dashed var(--b3);"></div>
+              <div style="font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:var(--t4);font-weight:500;margin-bottom:8px;">Reservas utilizadas em despesas</div>
+              <div id="sankey-reservas" style="height:110px;overflow:hidden;"></div>
+            </div>
           </div>
         </div>
       </section>
@@ -190,6 +182,7 @@
               <option value="">Todos</option>
               <option value="receita">Receita</option>
               <option value="despesa">Despesa</option>
+              <option value="reserva">Reserva</option>
             </select>
           </div>
           <div><label>Categoria</label>
@@ -222,7 +215,7 @@
             Nova categoria
           </button>
         </div>
-        <div class="grid-2">
+        <div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
           <div class="card">
             <div class="card-title cat-section-title">Despesas</div>
             <div id="list-cats-despesa"></div>
@@ -230,6 +223,29 @@
           <div class="card">
             <div class="card-title cat-section-title">Receitas</div>
             <div id="list-cats-receita"></div>
+          </div>
+          <div class="card">
+            <div class="card-title cat-section-title">Reservas</div>
+            <div id="list-cats-reserva"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- METAS -->
+      <section class="section" id="sec-metas">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Metas</div>
+            <div class="page-subtitle">Acompanhe objetivos de receita, gastos e reservas</div>
+          </div>
+          <button class="btn btn-primary" id="btn-nova-meta">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Nova meta
+          </button>
+        </div>
+        <div class="scrollable">
+          <div class="metas-grid" id="metas-grid">
+            <!-- Rendered via JS -->
           </div>
         </div>
       </section>
@@ -388,6 +404,7 @@
           <select id="mc-tipo">
             <option value="despesa">Despesa</option>
             <option value="receita">Receita</option>
+            <option value="reserva">Reserva</option>
           </select>
         </div>
       </div>
@@ -402,6 +419,56 @@
     </div>
   </div>
 
+  <!-- MODAL META -->
+  <div class="modal-overlay hidden" id="modal-meta-overlay">
+    <div class="modal" style="width:420px;">
+      <div class="modal-title" id="modal-meta-title">Nova Meta</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="mm-tipo">
+            <option value="despesa">Despesa</option>
+            <option value="receita">Receita</option>
+            <option value="reserva">Reserva</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Categoria</label>
+          <select id="mm-cat"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Valor alvo (R$)</label>
+          <input type="number" id="mm-valor" placeholder="0,00" min="0.01" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Período</label>
+          <select id="mm-periodo">
+            <option value="mensal">Mensal</option>
+            <option value="trimestral">Trimestral</option>
+            <option value="anual">Anual</option>
+            <option value="especifico">Período específico</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data início</label>
+          <input type="date" id="mm-inicio">
+        </div>
+        <div class="form-group" id="mm-limite-group" style="display:none;">
+          <label>Data limite</label>
+          <input type="date" id="mm-limite">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" data-meta-cancel>Cancelar</button>
+        <button type="button" class="btn btn-primary" data-meta-save>Salvar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DRAWER TRANSAÇÃO -->
   <div id="drawer-root"></div>
   <div id="recorrente-drawer-root"></div>
@@ -409,6 +476,8 @@
   <!-- TOAST -->
   <div id="toast"></div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
   <script src="/src/assets/xlsx.full.min.js"></script>
   <script type="module" src="/src/main.js"></script>
 </body>

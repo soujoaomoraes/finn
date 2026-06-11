@@ -12,7 +12,7 @@ pub fn init(db_path: PathBuf, db_key: &str) -> Result<(), String> {
         "CREATE TABLE IF NOT EXISTS categorias (
             id        INTEGER PRIMARY KEY AUTOINCREMENT,
             nome      TEXT    NOT NULL,
-            tipo      TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa')),
+            tipo      TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa', 'reserva')),
             cor       TEXT    NOT NULL
         );",
         [],
@@ -24,19 +24,66 @@ pub fn init(db_path: PathBuf, db_key: &str) -> Result<(), String> {
             descricao  TEXT    NOT NULL,
             valor      REAL    NOT NULL CHECK(valor > 0),
             data       TEXT    NOT NULL,
-            tipo       TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa')),
+            tipo       TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa', 'reserva')),
             categoria  TEXT    NOT NULL,
             obs        TEXT    DEFAULT '',
-            recorrente_id INTEGER DEFAULT NULL
+            recorrente_id INTEGER DEFAULT NULL,
+            reserva_id INTEGER DEFAULT NULL,
+            is_transferencia INTEGER NOT NULL DEFAULT 0,
+            transferencia_par_id INTEGER DEFAULT NULL
         );",
         [],
     ).map_err(|e| e.to_string())?;
 
-    // Add recorrente_id column if it doesn't exist (idempotent migration)
-    let _ = conn.execute(
-        "ALTER TABLE transacoes ADD COLUMN recorrente_id INTEGER DEFAULT NULL",
+    // Add columns if they don't exist (idempotent migration)
+    let _ = conn.execute("ALTER TABLE transacoes ADD COLUMN recorrente_id INTEGER DEFAULT NULL", []);
+    let _ = conn.execute("ALTER TABLE transacoes ADD COLUMN reserva_id INTEGER DEFAULT NULL", []);
+    let _ = conn.execute("ALTER TABLE transacoes ADD COLUMN is_transferencia INTEGER NOT NULL DEFAULT 0", []);
+    let _ = conn.execute("ALTER TABLE transacoes ADD COLUMN transferencia_par_id INTEGER DEFAULT NULL", []);
+
+    // Migration for CHECK constraints in categorias and transacoes
+    let table_sql: String = conn.query_row(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='categorias'",
         [],
-    );
+        |row| row.get(0),
+    ).unwrap_or_default();
+
+    if !table_sql.contains("'reserva'") {
+        let _ = conn.execute_batch(
+            "PRAGMA foreign_keys=off;
+            BEGIN TRANSACTION;
+
+            CREATE TABLE categorias_new (
+                id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome      TEXT    NOT NULL,
+                tipo      TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa', 'reserva')),
+                cor       TEXT    NOT NULL
+            );
+            INSERT INTO categorias_new SELECT * FROM categorias;
+            DROP TABLE categorias;
+            ALTER TABLE categorias_new RENAME TO categorias;
+
+            CREATE TABLE transacoes_new (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                descricao  TEXT    NOT NULL,
+                valor      REAL    NOT NULL CHECK(valor > 0),
+                data       TEXT    NOT NULL,
+                tipo       TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa', 'reserva')),
+                categoria  TEXT    NOT NULL,
+                obs        TEXT    DEFAULT '',
+                recorrente_id INTEGER DEFAULT NULL,
+                reserva_id INTEGER DEFAULT NULL,
+                is_transferencia INTEGER NOT NULL DEFAULT 0,
+                transferencia_par_id INTEGER DEFAULT NULL
+            );
+            INSERT INTO transacoes_new SELECT * FROM transacoes;
+            DROP TABLE transacoes;
+            ALTER TABLE transacoes_new RENAME TO transacoes;
+
+            COMMIT;
+            PRAGMA foreign_keys=on;"
+        );
+    }
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS recorrentes (
@@ -63,6 +110,23 @@ pub fn init(db_path: PathBuf, db_key: &str) -> Result<(), String> {
         [],
     ).map_err(|e| e.to_string())?;
 
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS metas (
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            categoria_id INTEGER NOT NULL,
+            tipo         TEXT    NOT NULL CHECK(tipo IN ('receita', 'despesa', 'reserva')),
+            valor_meta   REAL    NOT NULL CHECK(valor_meta > 0),
+            periodo      TEXT    NOT NULL DEFAULT 'mensal'
+                         CHECK(periodo IN ('mensal', 'trimestral', 'anual', 'especifico')),
+            data_inicio  TEXT    NOT NULL,
+            data_limite  TEXT,
+            ativa        INTEGER NOT NULL DEFAULT 1,
+            created_at   TEXT    NOT NULL,
+            updated_at   TEXT    NOT NULL
+        );",
+        [],
+    ).map_err(|e| e.to_string())?;
+
     // Verifica seed
     let count: i64 = conn
         .query_row("SELECT COUNT(*) FROM categorias", [], |row| row.get(0))
@@ -81,8 +145,24 @@ pub fn init(db_path: PathBuf, db_key: &str) -> Result<(), String> {
             ('Salário', 'receita', '#4ade80'),
             ('Freelance', 'receita', '#34d399'),
             ('Investimentos', 'receita', '#fbbf24'),
-            ('Outros', 'receita', '#94a3b8');"
+            ('Outros', 'receita', '#94a3b8'),
+            ('Reserva de emergência', 'reserva', '#4ade80'),
+            ('Viagem fim do ano', 'reserva', '#60a5fa'),
+            ('Carro novo', 'reserva', '#c084fc');"
         ).map_err(|e| e.to_string())?;
+    } else {
+        let reserva_count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM categorias WHERE tipo = 'reserva'", [], |row| row.get(0))
+            .unwrap_or(0);
+
+        if reserva_count == 0 {
+            let _ = conn.execute_batch(
+                "INSERT INTO categorias (nome, tipo, cor) VALUES
+                ('Reserva de emergência', 'reserva', '#4ade80'),
+                ('Viagem fim do ano', 'reserva', '#60a5fa'),
+                ('Carro novo', 'reserva', '#c084fc');"
+            );
+        }
     }
 
     Ok(())

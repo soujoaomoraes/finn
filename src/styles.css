@@ -632,6 +632,27 @@ tr:hover td {
   background: var(--bl10);
   color: var(--blue);
 }
+.badge-purple {
+  background: rgba(192, 132, 252, 0.10);
+  color: #c084fc;
+  border: 1px solid rgba(192, 132, 252, 0.15);
+}
+.is-reserve {
+  color: #c084fc;
+  font-weight: 600;
+}
+.reserva-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: #c084fc;
+  background: rgba(192, 132, 252, 0.08);
+  border: 1px solid rgba(192, 132, 252, 0.15);
+  border-radius: 5px;
+  padding: 1px 6px;
+  margin-top: 3px;
+}
 .badge-gray {
   background: var(--s3);
   color: var(--t2);

@@ -4,6 +4,7 @@ const NAV_SECTION_MAP = {
   'nav-dashboard': 'dashboard',
   'nav-lancamentos': 'lancamentos',
   'nav-recorrentes': 'recorrentes',
+  'nav-metas': 'metas',
   'nav-categorias': 'categorias',
   'nav-importar': 'importar',
   'nav-backup': 'backup'

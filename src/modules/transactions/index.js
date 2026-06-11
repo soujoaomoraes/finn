@@ -68,6 +68,7 @@ export function renderLancamentos() {
 
   const totalRec = data.filter(t => t.tipo === 'receita').reduce((a, b) => a + b.valor, 0);
   const totalDes = data.filter(t => t.tipo === 'despesa').reduce((a, b) => a + b.valor, 0);
+  const totalRes = data.filter(t => t.tipo === 'reserva').reduce((a, b) => a + b.valor, 0);
 
   const div = document.getElementById('table-lancamentos');
   if (!div) return;
@@ -81,6 +82,18 @@ export function renderLancamentos() {
       </tr></thead>
       <tbody>
       ${data.map(t => {
+        const isReserva = t.tipo === 'reserva';
+        const isReceita = t.tipo === 'receita';
+        const isDespesaReserva = t.tipo === 'despesa' && t.reserva_id;
+        let badgeClass = 'badge-red';
+        let tipoLabel = t.tipo;
+        if (isReceita) { badgeClass = 'badge-green'; }
+        else if (isReserva) { badgeClass = 'badge-purple'; tipoLabel = 'reserva'; }
+        const reservaTag = isDespesaReserva && t.reserva_nome
+          ? `<span class="reserva-tag" title="Debitado da reserva">📦 ${t.reserva_nome}</span>`
+          : '';
+        const valorClass = isReceita ? 'is-income' : isReserva ? 'is-reserve' : 'is-expense';
+        const valorPrefix = isReceita ? '+' : isReserva ? '↑' : '-';
         const c = _categorias.find(x => x.nome === t.categoria);
         const cor = c ? c.cor : '#94a3b8';
         const recorrenteIcon = t.recorrente_id
@@ -98,26 +111,22 @@ export function renderLancamentos() {
           <td>
             <div class="tx-desc">${t.descricao}${recorrenteIcon}</div>
             ${t.obs ? `<div class="tx-obs">${t.obs}</div>` : ''}
+            ${reservaTag}
           </td>
           <td><span class="tx-category"><span class="cat-dot" style="background:${cor}"></span>${t.categoria}</span></td>
-          <td><span class="badge ${t.tipo === 'receita' ? 'badge-green' : 'badge-red'}">${t.tipo}</span></td>
-          <td class="tx-value ${t.tipo === 'receita' ? 'is-income' : 'is-expense'}">
-            ${t.tipo === 'receita' ? '+' : '-'}${fmt(t.valor)}
+          <td><span class="badge ${badgeClass}">${tipoLabel}</span></td>
+          <td class="tx-value ${valorClass}">
+            ${valorPrefix}${fmt(t.valor)}
           </td>
           <td class="tx-actions">
             <button class="btn-icon" data-edit="${t.id}" title="Editar" aria-label="Editar transação">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M9.8 3.2 12.8 6.2"/>
-                <path d="M4 12l1-3.2 6.7-6.7a1.5 1.5 0 0 1 2.1 2.1L7.1 10.9 4 12Z"/>
-                <path d="M3 13h10"/>
+                <path d="M9.8 3.2 12.8 6.2"/><path d="M4 12l1-3.2 6.7-6.7a1.5 1.5 0 0 1 2.1 2.1L7.1 10.9 4 12Z"/><path d="M3 13h10"/>
               </svg>
             </button>
             <button class="btn-icon btn-icon-danger" data-delete="${t.id}" title="Excluir" aria-label="Excluir transação">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M3 4h10"/>
-                <path d="M6 4V2.8h4V4"/>
-                <path d="M5 6v6M8 6v6M11 6v6"/>
-                <path d="M4.5 4 5 14h6l.5-10"/>
+                <path d="M3 4h10"/><path d="M6 4V2.8h4V4"/><path d="M5 6v6M8 6v6M11 6v6"/><path d="M4.5 4 5 14h6l.5-10"/>
               </svg>
             </button>
           </td>
@@ -126,7 +135,10 @@ export function renderLancamentos() {
       <tr class="totals-row">
         <td colspan="4" style="color:var(--text3);font-size:12px;padding-top:14px">Total filtrado</td>
         <td style="text-align:right;padding-top:14px;font-size:13px">
-          <span style="color:var(--green)">${fmt(totalRec)}</span> <span style="color:var(--text3)">/ </span><span style="color:var(--red)">${fmt(totalDes)}</span>
+          <span style="color:var(--green)">${fmt(totalRec)}</span>
+          <span style="color:var(--text3)"> / </span>
+          <span style="color:var(--red)">${fmt(totalDes)}</span>
+          ${totalRes > 0 ? `<span style="color:var(--text3)"> / </span><span style="color:var(--purple)">↑${fmt(totalRes)}</span>` : ''}
         </td>
         <td></td>
       </tr>

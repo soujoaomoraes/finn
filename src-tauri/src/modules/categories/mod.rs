@@ -54,6 +54,17 @@ pub fn save_categoria(categoria: Categoria, state: tauri::State<DbState>) -> Res
 #[tauri::command]
 pub fn delete_categoria(id: i64, state: tauri::State<DbState>) -> Result<(), String> {
     let conn = state.conn.lock().map_err(|e| e.to_string())?;
+
+    let tipo: Result<String, _> = conn.query_row("SELECT tipo FROM categorias WHERE id = ?1", params![id], |row| row.get(0));
+    if let Ok(t) = tipo {
+        if t == "reserva" {
+            let saldo = crate::modules::reserves::get_saldo_atual_internal(&conn, id).unwrap_or(0.0);
+            if saldo > 0.0 {
+                return Err(format!("SALDO_MAIOR_QUE_ZERO|{}", saldo));
+            }
+        }
+    }
+
     conn.execute("DELETE FROM categorias WHERE id = ?1", params![id]).map_err(|e| e.to_string())?;
     Ok(())
 }

@@ -1,0 +1,201 @@
+/* ── Tela Metas ─────────────────────────────────────────────────────────────── */
+
+#sec-metas.active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#sec-metas .scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 28px 28px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--b2) transparent;
+}
+
+.metas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin-top: 4px;
+}
+
+.metas-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.metas-col-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .2px;
+}
+
+.metas-col-count {
+  font-size: 10px;
+  color: var(--t4);
+}
+
+.meta-card {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: 11px;
+  padding: 13px 14px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+
+.meta-card:last-child {
+  margin-bottom: 0;
+}
+
+.meta-card:hover {
+  border-color: var(--b2);
+}
+
+.meta-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.meta-cat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.meta-name {
+  font-size: 12.5px;
+  color: var(--t1);
+  font-weight: 500;
+}
+
+.meta-period-badge {
+  font-size: 9px;
+  color: var(--t4);
+  padding: 2px 6px;
+  background: var(--s3);
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.meta-card-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.meta-card:hover .meta-card-actions {
+  opacity: 1;
+}
+
+.meta-vals {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.meta-realizado {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -.4px;
+}
+
+.meta-sep {
+  font-size: 11px;
+  color: var(--t4);
+}
+
+.meta-alvo {
+  font-size: 12px;
+  color: var(--t3);
+}
+
+.meta-pct {
+  font-size: 10px;
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.meta-track {
+  height: 4px;
+  background: var(--b2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 7px;
+}
+
+.meta-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.meta-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta-status {
+  font-size: 10px;
+  color: var(--t4);
+}
+
+.meta-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 11px;
+  border-radius: 11px;
+  border: 1.5px dashed var(--b3);
+  background: transparent;
+  color: var(--t4);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.meta-add-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(249, 115, 22, 0.05);
+}
+
+.meta-card-inactive {
+  opacity: 0.55;
+}
+
+/* ── Modal de Meta ───────────────────────────────────────────────────────────── */
+
+#modal-meta-overlay .modal {
+  width: 420px;
+  border: 1px solid var(--b2);
+  background: var(--s2);
+}
+
+#modal-meta-overlay .modal-title {
+  font-size: 15px;
+  font-weight: 600;
+}
