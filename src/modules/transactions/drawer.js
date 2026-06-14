@@ -258,7 +258,7 @@ async function salvarTransacao() {
   const transacao = {
     descricao, valor, data, tipo, categoria, obs,
     reserva_id: tipo === 'despesa' ? _selectedReservaId : null,
-    is_transferencia: false,
+    is_transferencia: 0,
     transferencia_par_id: null,
   };
   if (id) transacao.id = parseInt(id);

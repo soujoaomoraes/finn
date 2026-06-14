@@ -35,7 +35,7 @@ function getMonthTransactions(m, y) {
 export function renderDashboard() {
   const mt = getMonthTransactions(_currentMonth, _currentYear);
   const receitas = mt.filter(t => t.tipo === 'receita').reduce((a, b) => a + b.valor, 0);
-  const despesas = mt.filter(t => t.tipo === 'despesa').reduce((a, b) => a + b.valor, 0);
+  const despesas = mt.filter(t => t.tipo === 'despesa' && !t.is_transferencia).reduce((a, b) => a + b.valor, 0);
   // Saldo do mês is Receitas - Despesas (aportes de reserva não afetam esse saldo)
   const saldo = receitas - despesas;
   
@@ -48,8 +48,8 @@ export function renderDashboard() {
 
   // Reservado: Aportes (tipo reserva) - Despesas (usando reserva_id)
   const totalReservado = _transacoes.reduce((a, b) => {
-    if (b.tipo === 'reserva') return a + b.valor;
-    if (b.tipo === 'despesa' && b.reserva_id) return a - b.valor;
+    if (b.tipo === 'reserva' && !b.is_transferencia) return a + b.valor;
+    if (b.tipo === 'despesa' && b.reserva_id && !b.is_transferencia) return a - b.valor;
     return a;
   }, 0);
 
@@ -88,8 +88,8 @@ function renderDashboardSankey(mt) {
 
   // 1. Receitas Sankey
   const receitasList = mt.filter(t => t.tipo === 'receita');
-  const despesasList = mt.filter(t => t.tipo === 'despesa');
-  const reservasList = mt.filter(t => t.tipo === 'reserva');
+  const despesasList = mt.filter(t => t.tipo === 'despesa' && !t.is_transferencia);
+  const reservasList = mt.filter(t => t.tipo === 'reserva' && !t.is_transferencia);
 
   const totalReceitas = receitasList.reduce((a, b) => a + b.valor, 0);
   const totalDespesas = despesasList.reduce((a, b) => a + b.valor, 0);

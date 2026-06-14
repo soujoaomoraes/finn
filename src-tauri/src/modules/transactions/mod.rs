@@ -206,6 +206,80 @@ mod tests {
          let count: i64 = conn.query_row("SELECT COUNT(*) FROM transacoes WHERE id = ?1", params![id], |r| r.get(0)).unwrap_or(0);
          assert_eq!(count, 0);
      }
+
+     #[test]
+     fn test_save_despesa_com_reserva_valida_saldo() {
+         let conn = setup_test_conn();
+         conn.execute_batch(
+             "INSERT INTO categorias (nome, tipo, cor) VALUES ('Viagem', 'reserva', '#60a5fa');"
+         )
+         .unwrap();
+         let reserva_id: i64 = conn
+             .query_row("SELECT id FROM categorias WHERE nome = 'Viagem'", [], |row| row.get(0))
+             .unwrap();
+
+         let aporte = Transacao {
+             descricao: "Aporte".to_string(),
+             valor: 100.0,
+             data: "2026-06-11".to_string(),
+             tipo: "reserva".to_string(),
+             categoria: "Viagem".to_string(),
+             reserva_id: None,
+             ..Default::default()
+         };
+         save_transacao_internal(&conn, &aporte).unwrap();
+
+         let despesa = Transacao {
+             descricao: "Hotel".to_string(),
+             valor: 40.0,
+             data: "2026-06-12".to_string(),
+             tipo: "despesa".to_string(),
+             categoria: "Viagem".to_string(),
+             reserva_id: Some(reserva_id),
+             ..Default::default()
+         };
+         let id = save_transacao_internal(&conn, &despesa).unwrap();
+         let saldo: f64 = crate::modules::reserves::get_saldo_atual_internal(&conn, reserva_id).unwrap();
+
+         assert!(id > 0);
+         assert_eq!(saldo, 60.0);
+     }
+
+     #[test]
+     fn test_save_despesa_com_reserva_bloqueia_saldo_insuficiente() {
+         let conn = setup_test_conn();
+         conn.execute_batch(
+             "INSERT INTO categorias (nome, tipo, cor) VALUES ('Viagem', 'reserva', '#60a5fa');"
+         )
+         .unwrap();
+         let reserva_id: i64 = conn
+             .query_row("SELECT id FROM categorias WHERE nome = 'Viagem'", [], |row| row.get(0))
+             .unwrap();
+
+         let aporte = Transacao {
+             descricao: "Aporte".to_string(),
+             valor: 50.0,
+             data: "2026-06-11".to_string(),
+             tipo: "reserva".to_string(),
+             categoria: "Viagem".to_string(),
+             ..Default::default()
+         };
+         save_transacao_internal(&conn, &aporte).unwrap();
+
+         let despesa = Transacao {
+             descricao: "Hotel".to_string(),
+             valor: 75.0,
+             data: "2026-06-12".to_string(),
+             tipo: "despesa".to_string(),
+             categoria: "Viagem".to_string(),
+             reserva_id: Some(reserva_id),
+             ..Default::default()
+         };
+         let result = save_transacao_internal(&conn, &despesa);
+
+         assert!(result.is_err());
+         assert!(result.unwrap_err().starts_with("SALDO_INSUFICIENTE"));
+     }
  }
 
  pub mod export;

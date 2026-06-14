@@ -25,7 +25,7 @@ pub fn get_saldo_atual_internal(conn: &rusqlite::Connection, reserva_id: i64) ->
     let cat_nome_res: Result<String, _> = conn.query_row("SELECT nome FROM categorias WHERE id = ?1", params![reserva_id], |row| row.get(0));
     if let Ok(cat_nome) = cat_nome_res {
         let aportes: f64 = conn.query_row(
-            "SELECT COALESCE(SUM(CASE WHEN is_transferencia = 0 THEN valor ELSE 0 END), 0) FROM transacoes WHERE tipo = 'reserva' AND categoria = ?1",
+            "SELECT COALESCE(SUM(valor), 0) FROM transacoes WHERE tipo = 'reserva' AND categoria = ?1",
             params![cat_nome],
             |row| row.get(0)
         ).unwrap_or(0.0);
@@ -51,7 +51,7 @@ pub fn get_reserva_saldos(state: tauri::State<DbState>) -> Result<Vec<ReservaSal
             c.id,
             c.nome,
             c.cor,
-            COALESCE((SELECT SUM(CASE WHEN is_transferencia = 0 THEN valor ELSE 0 END) FROM transacoes WHERE tipo = 'reserva' AND categoria = c.nome), 0)
+            COALESCE((SELECT SUM(valor) FROM transacoes WHERE tipo = 'reserva' AND categoria = c.nome), 0)
             - COALESCE((SELECT SUM(valor) FROM transacoes WHERE tipo = 'despesa' AND reserva_id = c.id), 0) AS saldo_atual,
             m.valor_meta
          FROM categorias c
@@ -88,7 +88,11 @@ pub fn get_reserva_saldos(state: tauri::State<DbState>) -> Result<Vec<ReservaSal
 #[tauri::command]
 pub fn transferir_reserva(payload: TransferirReservaPayload, state: tauri::State<DbState>) -> Result<(), String> {
     let mut conn_guard = state.conn.lock().map_err(|e| e.to_string())?;
-    let tx = conn_guard.transaction().map_err(|e| e.to_string())?;
+    transferir_reserva_internal(&mut conn_guard, &payload)
+}
+
+fn transferir_reserva_internal(conn: &mut rusqlite::Connection, payload: &TransferirReservaPayload) -> Result<(), String> {
+    let tx = conn.transaction().map_err(|e| e.to_string())?;
 
     let saldo_origem = get_saldo_atual_internal(&tx, payload.origem_id)?;
     if saldo_origem < payload.valor {
@@ -99,8 +103,8 @@ pub fn transferir_reserva(payload: TransferirReservaPayload, state: tauri::State
     let cat_destino: String = tx.query_row("SELECT nome FROM categorias WHERE id = ?1", params![payload.destino_id], |row| row.get(0)).map_err(|e| e.to_string())?;
 
     tx.execute(
-        "INSERT INTO transacoes (descricao, valor, data, tipo, categoria, obs, is_transferencia) VALUES (?1, ?2, ?3, 'reserva', ?4, ?5, 1)",
-        params![payload.descricao, -payload.valor, payload.data, cat_origem, format!("Transferência para {}", cat_destino)],
+        "INSERT INTO transacoes (descricao, valor, data, tipo, categoria, obs, reserva_id, is_transferencia) VALUES (?1, ?2, ?3, 'despesa', ?4, ?5, ?6, 1)",
+        params![payload.descricao, payload.valor, payload.data, cat_origem, format!("Transferência para {}", cat_destino), payload.origem_id],
     ).map_err(|e| e.to_string())?;
     let id_origem = tx.last_insert_rowid();
 
@@ -115,4 +119,93 @@ pub fn transferir_reserva(payload: TransferirReservaPayload, state: tauri::State
 
     tx.commit().map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::infrastructure::db::test_utils::test_db_connection;
+    use crate::modules::transactions::Transacao;
+
+    fn setup_reserves(conn: &mut rusqlite::Connection) -> (i64, i64) {
+        conn.execute_batch(
+            "INSERT INTO categorias (nome, tipo, cor) VALUES
+                ('Reserva A', 'reserva', '#4ade80'),
+                ('Reserva B', 'reserva', '#60a5fa');"
+        ).unwrap();
+        let origem_id: i64 = conn.query_row("SELECT id FROM categorias WHERE nome = 'Reserva A'", [], |row| row.get(0)).unwrap();
+        let destino_id: i64 = conn.query_row("SELECT id FROM categorias WHERE nome = 'Reserva B'", [], |row| row.get(0)).unwrap();
+        (origem_id, destino_id)
+    }
+
+    #[test]
+    fn test_transferir_reserva_cria_par_sem_valor_negativo() {
+        let mut conn = test_db_connection().unwrap();
+        let (origem_id, destino_id) = setup_reserves(&mut conn);
+
+        let aporte = Transacao {
+            descricao: "Aporte".to_string(),
+            valor: 100.0,
+            data: "2026-06-11".to_string(),
+            tipo: "reserva".to_string(),
+            categoria: "Reserva A".to_string(),
+            ..Default::default()
+        };
+        crate::modules::transactions::save_transacao_internal(&conn, &aporte).unwrap();
+
+        let payload = TransferirReservaPayload {
+            origem_id,
+            destino_id,
+            valor: 40.0,
+            data: "2026-06-11".to_string(),
+            descricao: "Transferência".to_string(),
+        };
+        transferir_reserva_internal(&mut conn, &payload).unwrap();
+
+        let origem_valor: f64 = conn.query_row(
+            "SELECT valor FROM transacoes WHERE categoria = 'Reserva A' AND tipo = 'despesa' AND is_transferencia = 1 ORDER BY id LIMIT 1",
+            [],
+            |row| row.get(0),
+        ).unwrap();
+        let destino_valor: f64 = conn.query_row(
+            "SELECT valor FROM transacoes WHERE categoria = 'Reserva B' AND is_transferencia = 1 ORDER BY id LIMIT 1",
+            [],
+            |row| row.get(0),
+        ).unwrap();
+        let origem_saldo = get_saldo_atual_internal(&conn, origem_id).unwrap();
+        let destino_saldo = get_saldo_atual_internal(&conn, destino_id).unwrap();
+
+        assert!(origem_valor > 0.0);
+        assert!(destino_valor > 0.0);
+        assert_eq!(origem_saldo, 60.0);
+        assert_eq!(destino_saldo, 40.0);
+    }
+
+    #[test]
+    fn test_transferir_reserva_bloqueia_saldo_insuficiente() {
+        let mut conn = test_db_connection().unwrap();
+        let (origem_id, destino_id) = setup_reserves(&mut conn);
+
+        let aporte = Transacao {
+            descricao: "Aporte".to_string(),
+            valor: 50.0,
+            data: "2026-06-11".to_string(),
+            tipo: "reserva".to_string(),
+            categoria: "Reserva A".to_string(),
+            ..Default::default()
+        };
+        crate::modules::transactions::save_transacao_internal(&conn, &aporte).unwrap();
+
+        let payload = TransferirReservaPayload {
+            origem_id,
+            destino_id,
+            valor: 75.0,
+            data: "2026-06-11".to_string(),
+            descricao: "Transferência".to_string(),
+        };
+        let result = transferir_reserva_internal(&mut conn, &payload);
+
+        assert!(result.is_err());
+        assert!(result.unwrap_err().starts_with("SALDO_INSUFICIENTE"));
+    }
 }
